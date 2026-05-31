@@ -1,0 +1,1 @@
+this.autowatch = 1;var plorkname = "Hush";function match(message) {	if (message == plorkname) outlet(0, 1);	else outlet(0,0);}	match.immediate = 1;function setplorkname(newname) {	plorkname = newname;}

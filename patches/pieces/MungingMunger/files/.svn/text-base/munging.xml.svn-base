@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="iso-8859-1" standalone="yes"?>
+
+<pattrstorage name = "munging">
+	<slot number = "1">
+		<pattr name = "grain-pitch" value = "1." />
+		<pattr name = "grain-pitch-variation" value = "0." />
+		<pattr name = "grain-rate-variation" value = "0." />
+		<pattr name = "grain-separation" value = "1." />
+		<pattr name = "grain-size" value = "504." />
+		<pattr name = "grain-size-variation" value = "1." />
+		<pattr name = "stereo-spread" value = "1." />
+		<pattr name = "voices" value = "20" />
+	</slot>
+	<slot number = "2">
+		<pattr name = "grain-pitch" value = "1." />
+		<pattr name = "grain-pitch-variation" value = "0.5" />
+		<pattr name = "grain-rate-variation" value = "0." />
+		<pattr name = "grain-separation" value = "0." />
+		<pattr name = "grain-size" value = "500." />
+		<pattr name = "grain-size-variation" value = "50." />
+		<pattr name = "stereo-spread" value = "1." />
+		<pattr name = "voices" value = "5" />
+	</slot>
+	<slot number = "3">
+		<pattr name = "grain-pitch" value = "1." />
+		<pattr name = "grain-pitch-variation" value = "2." />
+		<pattr name = "grain-rate-variation" value = "20." />
+		<pattr name = "grain-separation" value = "40." />
+		<pattr name = "grain-size" value = "300." />
+		<pattr name = "grain-size-variation" value = "115." />
+		<pattr name = "stereo-spread" value = "1." />
+		<pattr name = "voices" value = "20" />
+	</slot>
+	<slot number = "4">
+		<pattr name = "grain-pitch" value = "2." />
+		<pattr name = "grain-pitch-variation" value = "2." />
+		<pattr name = "grain-rate-variation" value = "20." />
+		<pattr name = "grain-separation" value = "40." />
+		<pattr name = "grain-size" value = "40." />
+		<pattr name = "grain-size-variation" value = "20." />
+		<pattr name = "stereo-spread" value = "1." />
+		<pattr name = "voices" value = "10" />
+	</slot>
+	<slot number = "5">
+		<pattr name = "grain-pitch" value = "10." />
+		<pattr name = "grain-pitch-variation" value = "10." />
+		<pattr name = "grain-rate-variation" value = "0." />
+		<pattr name = "grain-separation" value = "0." />
+		<pattr name = "grain-size" value = "40." />
+		<pattr name = "grain-size-variation" value = "10." />
+		<pattr name = "stereo-spread" value = "1." />
+		<pattr name = "voices" value = "20" />
+	</slot>
+</pattrstorage>
+

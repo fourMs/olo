@@ -1,0 +1,3 @@
+echo Starting Clix...
+cd files
+chuck clix-mono.ck server-local.ck

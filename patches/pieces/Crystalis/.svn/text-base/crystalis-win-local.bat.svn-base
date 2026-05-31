@@ -1,0 +1,3 @@
+echo Starting Clix...
+cd Crystalis
+chuck crystalis.ck server-local.ck

@@ -1,0 +1,830 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+
+<pattrstorage name = "NC_PlayerSave">
+	<slot number = "1" name = "test">
+		<pattr name = "amp_keys" value = "1" />
+		<pattr name = "amp_size" value = "9 14" />
+		<pattr name = "amps" value = "0.9 0.1 0.1 0.1 0.9 0.1 0.1 0.1 0.9 0.1 0.1 0.1 0.9 0.1 0.1 0.1 0.1" />
+		<pattr name = "basepitch" value = "24." />
+		<pattr name = "envelope" value = "1000. 0. 1. 0. 0. 0 31.914892 1. 0 117.021271 0. 0 723.404236 0.2 0 984.042542 0. 0" />
+		<pattr name = "follow_mode" value = "sequence" />
+		<pattr name = "main_gain" value = "101" />
+		<pattr name = "pitch_keys" value = "1" />
+		<pattr name = "pitch_size" value = "4 8" />
+		<pattr name = "pitches" value = "0 4 8 12 16 20 24 0 4 8 12 16 20 24 0 4 8" />
+		<pattr name = "sampler_gain" value = "26" />
+		<pattr name = "smoothtime" value = "0" />
+		<pattr name = "synth_gain" value = "125" />
+		<pattr name = "synth_waveform" value = "&quot;0. 1. 0. 0.5 0. 0.25 0.&quot;" />
+		<patcher name = "synth">
+			<patcher name = "fluid">
+				<pattr name = "bank" value = "0" />
+				<pattr name = "channel" value = "1" />
+				<pattr name = "program" value = "0" />
+				<pattr name = "soundfont_menu" value = "Analoguesque-DX-Epiano.sf2" />
+				<pattr name = "transpose" value = "12" />
+			</patcher>
+		</patcher>
+	</slot>
+	<slot number = "2" name = "IC1">
+		<pattr name = "amp_keys" value = "0" />
+		<pattr name = "amp_size" value = "0 13" />
+		<pattr name = "amps" value = "0.9 0.1 0.1 0.9 0.1 0.1 0.9 0.1 0.1 0.9 0.1 0.1 0.9 0.1 0.1 0.9 0.1" />
+		<pattr name = "basepitch" value = "60." />
+		<pattr name = "envelope" value = "1000. 0. 1. 0. 0. 0 31.914892 1. 0 117.021271 0. 0 723.404236 0.2 0 984.042542 0. 0" />
+		<pattr name = "follow_mode" value = "current" />
+		<pattr name = "main_gain" value = "111" />
+		<pattr name = "pitch_keys" value = "0" />
+		<pattr name = "pitch_size" value = "2 7" />
+		<pattr name = "pitches" value = "1 2 4 1 2 20 16 20 18 14 14 16 13 14 2 6 4" />
+		<pattr name = "sampler_gain" value = "125" />
+		<pattr name = "smoothtime" value = "0" />
+		<pattr name = "synth_gain" value = "133" />
+		<pattr name = "synth_waveform" value = "&quot;1. 0.5 0.25 0.125 0.06 0.03 0.015&quot;" />
+		<patcher name = "synth">
+			<patcher name = "fluid">
+				<pattr name = "bank" value = "0" />
+				<pattr name = "channel" value = "1" />
+				<pattr name = "program" value = "0" />
+				<pattr name = "soundfont_menu" value = "Steinway_Grand_Piano_1.2.SF2" />
+				<pattr name = "transpose" value = "0" />
+			</patcher>
+		</patcher>
+	</slot>
+	<slot number = "3" name = "ST_beat">
+		<pattr name = "amp_keys" value = "0" />
+		<pattr name = "amp_size" value = "0 13" />
+		<pattr name = "amps" value = "0.550898 0.185629 0.191617 0.586826 0.131737 0.131737 0.131737 0.844311 0.844311 0.850299 0.850299 0.832335 0.407186 0.407186 0.407186 0.407186 0.407186" />
+		<pattr name = "basepitch" value = "60." />
+		<pattr name = "envelope" value = "1000. 0. 1. 0. 0. 0 31.914892 1. 0 117.021271 0. 0 723.404236 0.2 0 984.042542 0. 0" />
+		<pattr name = "follow_mode" value = "current" />
+		<pattr name = "main_gain" value = "111" />
+		<pattr name = "pitch_keys" value = "0" />
+		<pattr name = "pitch_size" value = "0 16" />
+		<pattr name = "pitches" value = "9 14 10 22 0 24 0 2 3 21 15 7 17 12 5 19 2" />
+		<pattr name = "sampler_gain" value = "100" />
+		<pattr name = "smoothtime" value = "0" />
+		<pattr name = "synth_gain" value = "3" />
+		<pattr name = "synth_waveform" value = "&quot;1. 0.5 0.25 0.125 0.06 0.03 0.015&quot;" />
+		<patcher name = "synth">
+			<patcher name = "fluid">
+				<pattr name = "bank" value = "0" />
+				<pattr name = "channel" value = "1" />
+				<pattr name = "program" value = "0" />
+				<pattr name = "soundfont_menu" value = "Tabla.sf2" />
+				<pattr name = "transpose" value = "0" />
+			</patcher>
+		</patcher>
+	</slot>
+	<slot number = "4" name = "ST_piano">
+		<pattr name = "amp_keys" value = "0" />
+		<pattr name = "amp_size" value = "0 15" />
+		<pattr name = "amps" value = "0.784431 0.185629 0.185629 0.185629 0.784431 0.341317 0.341317 0.341317 0.784431 0.520958 0.520958 0.51497 0.790419 0.682635 0.682635 0.682635 0.982036" />
+		<pattr name = "basepitch" value = "60." />
+		<pattr name = "envelope" value = "1000. 0. 1. 0. 0. 0 31.914892 1. 0 117.021271 0. 0 723.404236 0.2 0 984.042542 0. 0" />
+		<pattr name = "follow_mode" value = "current" />
+		<pattr name = "main_gain" value = "111" />
+		<pattr name = "pitch_keys" value = "0" />
+		<pattr name = "pitch_size" value = "0 8" />
+		<pattr name = "pitches" value = "16 16 4 4 7 7 11 11 7 7 11 11 7 7 4 4 11" />
+		<pattr name = "sampler_gain" value = "100" />
+		<pattr name = "smoothtime" value = "0" />
+		<pattr name = "synth_gain" value = "3" />
+		<pattr name = "synth_waveform" value = "&quot;1. 0.5 0.25 0.125 0.06 0.03 0.015&quot;" />
+		<patcher name = "synth">
+			<patcher name = "fluid">
+				<pattr name = "bank" value = "0" />
+				<pattr name = "channel" value = "1" />
+				<pattr name = "program" value = "0" />
+				<pattr name = "soundfont_menu" value = "Steinway_Grand_Piano_1.2.SF2" />
+				<pattr name = "transpose" value = "0" />
+			</patcher>
+		</patcher>
+	</slot>
+	<slot number = "5" name = "ST_piano2">
+		<pattr name = "amp_keys" value = "0" />
+		<pattr name = "amp_size" value = "0 15" />
+		<pattr name = "amps" value = "0.784431 0.041916 0.041916 0.035928 0.784431 0.041916 0.041916 0.041916 0.784431 0.053892 0.047904 0.047904 0.790419 0.047904 0.047904 0.041916 0.982036" />
+		<pattr name = "basepitch" value = "60." />
+		<pattr name = "envelope" value = "1000. 0. 1. 0. 0. 0 31.914892 1. 0 117.021271 0. 0 723.404236 0.2 0 984.042542 0. 0" />
+		<pattr name = "follow_mode" value = "current" />
+		<pattr name = "main_gain" value = "111" />
+		<pattr name = "pitch_keys" value = "0" />
+		<pattr name = "pitch_size" value = "0 15" />
+		<pattr name = "pitches" value = "0 2 4 5 4 9 11 12 7 16 17 19 4 21 23 24 2" />
+		<pattr name = "sampler_gain" value = "100" />
+		<pattr name = "smoothtime" value = "0" />
+		<pattr name = "synth_gain" value = "3" />
+		<pattr name = "synth_waveform" value = "&quot;1. 0.5 0.25 0.125 0.06 0.03 0.015&quot;" />
+		<patcher name = "synth">
+			<patcher name = "fluid">
+				<pattr name = "bank" value = "0" />
+				<pattr name = "channel" value = "1" />
+				<pattr name = "program" value = "0" />
+				<pattr name = "soundfont_menu" value = "Steinway_Grand_Piano_1.2.SF2" />
+				<pattr name = "transpose" value = "0" />
+			</patcher>
+		</patcher>
+	</slot>
+	<slot number = "6" name = "ajs_ominous">
+		<pattr name = "amp_keys" value = "0" />
+		<pattr name = "amp_size" value = "0 13" />
+		<pattr name = "amps" value = "0.508982 0.371257 0.491018 0.389222 0.341317 0.413174 0.479042 0.54491 0.610778 0.461078 0.341317 0.263473 0.239521 0.173653 1. 1. 1." />
+		<pattr name = "basepitch" value = "40." />
+		<pattr name = "envelope" value = "1000. 0. 1. 0. 0. 0 31.914892 1. 0 117.021271 0. 0 723.404236 0.2 0 984.042542 0. 0" />
+		<pattr name = "follow_mode" value = "current" />
+		<pattr name = "main_gain" value = "111" />
+		<pattr name = "pitch_keys" value = "0" />
+		<pattr name = "pitch_size" value = "0 13" />
+		<pattr name = "pitches" value = "10 18 16 10 12 14 12 10 8 10 12 14 16 18 2 4 6" />
+		<pattr name = "sampler_gain" value = "0" />
+		<pattr name = "smoothtime" value = "0" />
+		<pattr name = "synth_gain" value = "141" />
+		<pattr name = "synth_waveform" value = "&quot;0. 1. 0. 0.5&quot;" />
+		<patcher name = "synth">
+			<patcher name = "fluid">
+				<pattr name = "bank" value = "0" />
+				<pattr name = "channel" value = "1" />
+				<pattr name = "program" value = "0" />
+				<pattr name = "soundfont_menu" value = "Steinway_Grand_Piano_1.2.SF2" />
+				<pattr name = "transpose" value = "0" />
+			</patcher>
+		</patcher>
+	</slot>
+	<slot number = "7" name = "kchou1">
+		<pattr name = "amp_keys" value = "0" />
+		<pattr name = "amp_size" value = "0 16" />
+		<pattr name = "amps" value = "0.916168 0.634731 0.48503 0.754491 0.562874 0.658683 0.353293 0.586826 0.682635 0.796407 0.520958 0.520958 0.443114 0.57485 0.706587 0.383234 0.586826" />
+		<pattr name = "basepitch" value = "52." />
+		<pattr name = "envelope" value = "1000. 0. 1. 0. 0. 0 31.914892 1. 0 117.021271 0. 0 723.404236 0.2 0 984.042542 0. 0" />
+		<pattr name = "follow_mode" value = "current" />
+		<pattr name = "main_gain" value = "111" />
+		<pattr name = "pitch_keys" value = "0" />
+		<pattr name = "pitch_size" value = "0 16" />
+		<pattr name = "pitches" value = "1 18 10 15 10 7 19 11 16 11 2 12 5 14 20 7 14" />
+		<pattr name = "sampler_gain" value = "149" />
+		<pattr name = "smoothtime" value = "0" />
+		<pattr name = "synth_gain" value = "144" />
+		<pattr name = "synth_waveform" value = "&quot;0. 1. 0. 0.5 0. 0.25 0.&quot;" />
+		<patcher name = "synth">
+			<patcher name = "fluid">
+				<pattr name = "bank" value = "0" />
+				<pattr name = "channel" value = "1" />
+				<pattr name = "program" value = "0" />
+				<pattr name = "soundfont_menu" value = "Talking_Drum.SF2" />
+				<pattr name = "transpose" value = "-10" />
+			</patcher>
+		</patcher>
+	</slot>
+	<slot number = "8" name = "kchou2">
+		<pattr name = "amp_keys" value = "0" />
+		<pattr name = "amp_size" value = "0 16" />
+		<pattr name = "amps" value = "0.610778 0.347305 0.359281 0.269461 0.149701 0.299401 0.161677 0.550898 0.167665 0.317365 0.401198 0.311377 0.329341 0.257485 0.497006 0.329341 0.11976" />
+		<pattr name = "basepitch" value = "42." />
+		<pattr name = "envelope" value = "1000. 0. 1. 0. 0. 0 31.914892 1. 0 117.021271 0. 0 723.404236 0.2 0 984.042542 0. 0" />
+		<pattr name = "follow_mode" value = "current" />
+		<pattr name = "main_gain" value = "127" />
+		<pattr name = "pitch_keys" value = "0" />
+		<pattr name = "pitch_size" value = "0 16" />
+		<pattr name = "pitches" value = "20 8 14 17 11 8 12 22 9 14 16 19 14 7 10 13 15" />
+		<pattr name = "sampler_gain" value = "118" />
+		<pattr name = "smoothtime" value = "0" />
+		<pattr name = "synth_gain" value = "131" />
+		<pattr name = "synth_waveform" value = "&quot;0. 1. 0. 0.5 0. 0.25 0.&quot;" />
+		<patcher name = "synth">
+			<patcher name = "fluid">
+				<pattr name = "bank" value = "0" />
+				<pattr name = "channel" value = "1" />
+				<pattr name = "program" value = "0" />
+				<pattr name = "soundfont_menu" value = "HS_M1_Drums.sf2" />
+				<pattr name = "transpose" value = "-3" />
+			</patcher>
+		</patcher>
+	</slot>
+	<slot number = "9" name = "brenda_twinklev">
+		<pattr name = "amp_keys" value = "0" />
+		<pattr name = "amp_size" value = "0 16" />
+		<pattr name = "amps" value = "0.9 0.1 0.1 0.9 0.1 0.1 0.9 0.1 0.1 0.9 0.1 0.1 0.9 0.1 0.1 0.9 0.1" />
+		<pattr name = "basepitch" value = "60." />
+		<pattr name = "envelope" value = "1000. 0. 1. 0. 0. 0 31.914892 1. 0 117.021271 0. 0 723.404236 0.2 0 984.042542 0. 0" />
+		<pattr name = "follow_mode" value = "current" />
+		<pattr name = "main_gain" value = "111" />
+		<pattr name = "pitch_keys" value = "0" />
+		<pattr name = "pitch_size" value = "0 15" />
+		<pattr name = "pitches" value = "8 8 16 8 16 16 16 16 23 18 18 17 16 16 16 16 16" />
+		<pattr name = "sampler_gain" value = "125" />
+		<pattr name = "smoothtime" value = "0" />
+		<pattr name = "synth_gain" value = "126" />
+		<pattr name = "synth_waveform" value = "&quot;1. 0.5 0.25 0.125 0.06 0.03 0.015&quot;" />
+		<patcher name = "synth">
+			<patcher name = "fluid">
+				<pattr name = "bank" value = "0" />
+				<pattr name = "channel" value = "1" />
+				<pattr name = "program" value = "0" />
+				<pattr name = "soundfont_menu" value = "Steinway_Grand_Piano_1.2.SF2" />
+				<pattr name = "transpose" value = "0" />
+			</patcher>
+		</patcher>
+	</slot>
+	<slot number = "10" name = "tkramer1">
+		<pattr name = "amp_keys" value = "0" />
+		<pattr name = "amp_size" value = "0 16" />
+		<pattr name = "amps" value = "0.287425 0.712575 0.844311 0.479042 0.730539 0.359281 0.1 0.736527 0.48503 0.1 0.550898 0.772455 0.1 0.730539 0.526946 0.1 0.754491" />
+		<pattr name = "basepitch" value = "60." />
+		<pattr name = "envelope" value = "1000. 0. 1. 0. 0. 0 31.914892 1. 0 117.021271 0. 0 723.404236 0.2 0 984.042542 0. 0" />
+		<pattr name = "follow_mode" value = "current" />
+		<pattr name = "main_gain" value = "92" />
+		<pattr name = "pitch_keys" value = "0" />
+		<pattr name = "pitch_size" value = "0 16" />
+		<pattr name = "pitches" value = "8 6 16 12 2 22 4 19 18 0 10 6 22 19 14 0 4" />
+		<pattr name = "sampler_gain" value = "125" />
+		<pattr name = "smoothtime" value = "0" />
+		<pattr name = "synth_gain" value = "133" />
+		<pattr name = "synth_waveform" value = "&quot;1. 0.5 0.25 0.125 0.06 0.03 0.015&quot;" />
+		<patcher name = "synth">
+			<patcher name = "fluid">
+				<pattr name = "bank" value = "0" />
+				<pattr name = "channel" value = "1" />
+				<pattr name = "program" value = "0" />
+				<pattr name = "soundfont_menu" value = "Campbells_Harpischor#3FA8A0.SF2" />
+				<pattr name = "transpose" value = "0" />
+			</patcher>
+		</patcher>
+	</slot>
+	<slot number = "11" name = "gotosleep_BW">
+		<pattr name = "amp_keys" value = "0" />
+		<pattr name = "amp_size" value = "0 16" />
+		<pattr name = "amps" value = "0.778443 0.341317 0.167665 0.263473 0.437126 0.215569 0.269461 0.257485 0.239521 0.173653 0.233533 0.185629 0.431138 0.077844 0.700599 0.401198 0.191617" />
+		<pattr name = "basepitch" value = "60." />
+		<pattr name = "envelope" value = "1000. 0. 1. 0. 0. 0 10.638297 0.733333 0 90.425529 0.04 0 691.489319 0. 0 744.680847 0.16 0 909.574463 0. 0" />
+		<pattr name = "follow_mode" value = "current" />
+		<pattr name = "main_gain" value = "104" />
+		<pattr name = "pitch_keys" value = "0" />
+		<pattr name = "pitch_size" value = "0 16" />
+		<pattr name = "pitches" value = "0 0 0 3 0 6 0 10 0 12 0 14 0 0 0 0 17" />
+		<pattr name = "sampler_gain" value = "132" />
+		<pattr name = "smoothtime" value = "0" />
+		<pattr name = "synth_gain" value = "124" />
+		<pattr name = "synth_waveform" value = "&quot;0. 0. 2. 0.5 0. 0.1 0.&quot;" />
+		<patcher name = "synth">
+			<patcher name = "fluid">
+				<pattr name = "bank" value = "0" />
+				<pattr name = "channel" value = "1" />
+				<pattr name = "program" value = "0" />
+				<pattr name = "soundfont_menu" value = "Naturally_Decaying_B-#A0B68.sf2" />
+				<pattr name = "transpose" value = "0" />
+			</patcher>
+		</patcher>
+	</slot>
+	<slot number = "12" name = "giantsteps_BW">
+		<pattr name = "amp_keys" value = "0" />
+		<pattr name = "amp_size" value = "0 4" />
+		<pattr name = "amps" value = "0.293413 0.053892 0.45509 0.203593 0.45509 0. 0.467066 0.203593 0.449102 0.179641 0.45509 0. 0.197605 0. 0.449102 0.215569 0.443114" />
+		<pattr name = "basepitch" value = "48." />
+		<pattr name = "envelope" value = "1000. 0. 1. 0. 0. 0 31.914892 1. 0 117.021271 0. 0 191.489349 0.08 0 728.723389 0. 0 984.042542 0. 0" />
+		<pattr name = "follow_mode" value = "current" />
+		<pattr name = "main_gain" value = "111" />
+		<pattr name = "pitch_keys" value = "0" />
+		<pattr name = "pitch_size" value = "0 16" />
+		<pattr name = "pitches" value = "21 9 17 5 13 8 9 9 12 7 13 12 11 13 16 11 12" />
+		<pattr name = "sampler_gain" value = "125" />
+		<pattr name = "smoothtime" value = "0" />
+		<pattr name = "synth_gain" value = "140" />
+		<pattr name = "synth_waveform" value = "&quot;0. 0. 2. 0.5 0. 0.1 0.&quot;" />
+		<patcher name = "synth">
+			<patcher name = "fluid">
+				<pattr name = "bank" value = "0" />
+				<pattr name = "channel" value = "1" />
+				<pattr name = "program" value = "0" />
+				<pattr name = "soundfont_menu" value = "Soundfont_BassFing.sf2" />
+				<pattr name = "transpose" value = "0" />
+			</patcher>
+		</patcher>
+	</slot>
+	<slot number = "13" name = "yl_almost_p">
+		<pattr name = "amp_keys" value = "1" />
+		<pattr name = "amp_size" value = "0 12" />
+		<pattr name = "amps" value = "0.898204 0.053892 0.053892 0.898204 0.047904 0.047904 0.898204 0.047904 0.047904 0.898204 0.047904 0.9 0.041916 0.02994 0.02994 0.023952 0.005988" />
+		<pattr name = "basepitch" value = "60." />
+		<pattr name = "envelope" value = "1000. 0. 1. 0. 0. 0 31.914892 1. 0 117.021271 0. 0 186.170212 0.64 0 202.127655 0.546667 0 723.404236 0.2 0 984.042542 0. 0" />
+		<pattr name = "follow_mode" value = "current" />
+		<pattr name = "main_gain" value = "111" />
+		<pattr name = "pitch_keys" value = "0" />
+		<pattr name = "pitch_size" value = "0 16" />
+		<pattr name = "pitches" value = "0 19 8 5 12 20 24 20 14 22 3 10 7 19 17 15 19" />
+		<pattr name = "sampler_gain" value = "125" />
+		<pattr name = "smoothtime" value = "24" />
+		<pattr name = "synth_gain" value = "127" />
+		<pattr name = "synth_waveform" value = "&quot;1. 0.5 0.9 0.4 0.8 0.3 0.7&quot;" />
+		<patcher name = "synth">
+			<patcher name = "fluid">
+				<pattr name = "bank" value = "0" />
+				<pattr name = "channel" value = "1" />
+				<pattr name = "program" value = "0" />
+				<pattr name = "soundfont_menu" value = "Gort's_MiniPiano_J1.SF2" />
+				<pattr name = "transpose" value = "0" />
+			</patcher>
+		</patcher>
+	</slot>
+	<slot number = "14" name = "mwh_eno">
+		<pattr name = "amp_keys" value = "0" />
+		<pattr name = "amp_size" value = "0 16" />
+		<pattr name = "amps" value = "1. 0.317365 0. 0. 1. 0.017964 0.017964 0.017964 0.005988 0. 1. 0.311377 0. 0. 1. 0.311377 0.023952" />
+		<pattr name = "basepitch" value = "41." />
+		<pattr name = "envelope" value = "1000. 0. 1. 0. 0. 0 31.914892 1. 0 117.021271 0. 0 191.489349 0.013333 0 218.085098 0.013333 0 340.425507 0.026667 0 723.404236 0.2 0 984.042542 0. 0" />
+		<pattr name = "follow_mode" value = "current" />
+		<pattr name = "main_gain" value = "111" />
+		<pattr name = "pitch_keys" value = "0" />
+		<pattr name = "pitch_size" value = "5 10" />
+		<pattr name = "pitches" value = "0 2 3 5 7 9 10 12 14 15 17 19 18 22 24 0 2" />
+		<pattr name = "sampler_gain" value = "121" />
+		<pattr name = "smoothtime" value = "1047" />
+		<pattr name = "synth_gain" value = "157" />
+		<pattr name = "synth_waveform" value = "&quot;0. 0. 2. 0.5 0. 0.1 0.&quot;" />
+		<patcher name = "synth">
+			<patcher name = "fluid">
+				<pattr name = "bank" value = "0" />
+				<pattr name = "channel" value = "1" />
+				<pattr name = "program" value = "0" />
+				<pattr name = "soundfont_menu" value = "Gort's-Filters.SF2" />
+				<pattr name = "transpose" value = "0" />
+			</patcher>
+		</patcher>
+	</slot>
+	<slot number = "15" name = "IC_single">
+		<pattr name = "amp_keys" value = "0" />
+		<pattr name = "amp_size" value = "0 16" />
+		<pattr name = "amps" value = "0.8 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0." />
+		<pattr name = "basepitch" value = "60." />
+		<pattr name = "envelope" value = "1000. 0. 1. 0. 0. 0 31.914892 1. 0 117.021271 0. 0 723.404236 0.2 0 984.042542 0. 0" />
+		<pattr name = "follow_mode" value = "current" />
+		<pattr name = "main_gain" value = "111" />
+		<pattr name = "pitch_keys" value = "0" />
+		<pattr name = "pitch_size" value = "0 16" />
+		<pattr name = "pitches" value = "14 2 6 4 1 2 4 1 2 20 16 20 18 14 14 16 13" />
+		<pattr name = "sampler_gain" value = "129" />
+		<pattr name = "smoothtime" value = "0" />
+		<pattr name = "synth_gain" value = "133" />
+		<pattr name = "synth_waveform" value = "&quot;1. 0.5 0.25 0.125 0.06 0.03 0.015&quot;" />
+		<patcher name = "synth">
+			<patcher name = "fluid">
+				<pattr name = "bank" value = "0" />
+				<pattr name = "channel" value = "1" />
+				<pattr name = "program" value = "0" />
+				<pattr name = "soundfont_menu" value = "Steinway_Grand_Piano_1.2.SF2" />
+				<pattr name = "transpose" value = "0" />
+			</patcher>
+		</patcher>
+	</slot>
+	<slot number = "16" name = "HF_Pattern">
+		<pattr name = "amp_keys" value = "0" />
+		<pattr name = "amp_size" value = "0 16" />
+		<pattr name = "amps" value = "0.9 0.832335 0.754491 0.706587 0.652695 0.9 0.838323 0.730539 0.670659 0.60479 0.9 0.796407 0.712575 0.634731 0.556886 0.9 0.730539" />
+		<pattr name = "basepitch" value = "48." />
+		<pattr name = "envelope" value = "1000. 0. 1. 0. 0. 0 31.914892 1. 0 117.021271 0. 0 186.170212 0.64 0 202.127655 0.546667 0 723.404236 0.2 0 984.042542 0. 0" />
+		<pattr name = "follow_mode" value = "current" />
+		<pattr name = "main_gain" value = "111" />
+		<pattr name = "pitch_keys" value = "0" />
+		<pattr name = "pitch_size" value = "0 16" />
+		<pattr name = "pitches" value = "0 5 10 11 16 15 10 5 6 11 12 7 8 13 12 7 2" />
+		<pattr name = "sampler_gain" value = "143" />
+		<pattr name = "smoothtime" value = "0" />
+		<pattr name = "synth_gain" value = "157" />
+		<pattr name = "synth_waveform" value = "&quot;0. 1. 0. 0.5&quot;" />
+		<patcher name = "synth">
+			<patcher name = "fluid">
+				<pattr name = "bank" value = "0" />
+				<pattr name = "channel" value = "1" />
+				<pattr name = "program" value = "0" />
+				<pattr name = "soundfont_menu" value = "Rhodes_73.SF2" />
+				<pattr name = "transpose" value = "0" />
+			</patcher>
+		</patcher>
+	</slot>
+	<slot number = "17" name = " dz_randomtonalstuff">
+		<pattr name = "amp_keys" value = "0" />
+		<pattr name = "amp_size" value = "0 13" />
+		<pattr name = "amps" value = "0.1 0.9 0.125749 0.167665 0.748503 0.227545 0.239521 0.820359 0.257485 0.269461 0.664671 0.293413 0.311377 0.790419 0.335329 0.359281 0.736527" />
+		<pattr name = "basepitch" value = "60." />
+		<pattr name = "envelope" value = "1000. 0. 1. 0. 0. 0 31.914892 1. 0 117.021271 0. 0 723.404236 0.2 0 984.042542 0. 0" />
+		<pattr name = "follow_mode" value = "current" />
+		<pattr name = "main_gain" value = "111" />
+		<pattr name = "pitch_keys" value = "0" />
+		<pattr name = "pitch_size" value = "2 7" />
+		<pattr name = "pitches" value = "14 21 18 14 9 16 13 9 6 11 16 19 23 22 21 20 1" />
+		<pattr name = "sampler_gain" value = "125" />
+		<pattr name = "smoothtime" value = "0" />
+		<pattr name = "synth_gain" value = "133" />
+		<pattr name = "synth_waveform" value = "&quot;1. 0.5 0.25 0.125 0.06 0.03 0.015&quot;" />
+		<patcher name = "synth">
+			<patcher name = "fluid">
+				<pattr name = "bank" value = "0" />
+				<pattr name = "channel" value = "1" />
+				<pattr name = "program" value = "0" />
+				<pattr name = "soundfont_menu" value = "Steinway_Grand_Piano_1.2.SF2" />
+				<pattr name = "transpose" value = "0" />
+			</patcher>
+		</patcher>
+	</slot>
+	<slot number = "18" name = "stephc_ncmini">
+		<pattr name = "amp_keys" value = "0" />
+		<pattr name = "amp_size" value = "0 10" />
+		<pattr name = "amps" value = "0.1 0.42515 0.1 0.886228 0.610778 0.335329 0.742515 0.9 0.598802 0.347305 0.107784 0.898204 0.592814 0.095808 0.1 0.886228 0.57485" />
+		<pattr name = "basepitch" value = "20." />
+		<pattr name = "envelope" value = "1000. 0. 1. 0. 0. 0 31.914892 1. 0 117.021271 0. 0 723.404236 0.2 0 984.042542 0. 0" />
+		<pattr name = "follow_mode" value = "current" />
+		<pattr name = "main_gain" value = "111" />
+		<pattr name = "pitch_keys" value = "0" />
+		<pattr name = "pitch_size" value = "1 13" />
+		<pattr name = "pitches" value = "13 8 5 1 17 8 4 1 17 11 4 0 16 7 2 12 12" />
+		<pattr name = "sampler_gain" value = "123" />
+		<pattr name = "smoothtime" value = "0" />
+		<pattr name = "synth_gain" value = "135" />
+		<pattr name = "synth_waveform" value = "&quot;1. 0.1 0.5 0.333 0.25 0.666 0.0125&quot;" />
+		<patcher name = "synth">
+			<patcher name = "fluid">
+				<pattr name = "bank" value = "0" />
+				<pattr name = "channel" value = "1" />
+				<pattr name = "program" value = "0" />
+				<pattr name = "soundfont_menu" value = "Steinway_Grand_Piano_1.2.SF2" />
+				<pattr name = "transpose" value = "-10" />
+			</patcher>
+		</patcher>
+	</slot>
+	<slot number = "19" name = "b_1">
+		<pattr name = "amp_keys" value = "0" />
+		<pattr name = "amp_size" value = "0 16" />
+		<pattr name = "amps" value = "0. 0. 0. 0. 1. 0. 0. 0. 0. 0. 0. 0. 0. 0. 1. 0. 0." />
+		<pattr name = "basepitch" value = "24." />
+		<pattr name = "envelope" value = "1000. 0. 1. 0. 0. 0 31.914892 1. 0 117.021271 0. 0 723.404236 0.2 0 984.042542 0. 0" />
+		<pattr name = "follow_mode" value = "current" />
+		<pattr name = "main_gain" value = "119" />
+		<pattr name = "pitch_keys" value = "0" />
+		<pattr name = "pitch_size" value = "0 16" />
+		<pattr name = "pitches" value = "14 2 6 4 1 2 4 1 2 20 16 20 18 14 14 16 13" />
+		<pattr name = "sampler_gain" value = "135" />
+		<pattr name = "smoothtime" value = "0" />
+		<pattr name = "synth_gain" value = "140" />
+		<pattr name = "synth_waveform" value = "&quot;1. 0.7 0.7 0.7 0.7 0.7 0.7&quot;" />
+		<patcher name = "synth">
+			<patcher name = "fluid">
+				<pattr name = "bank" value = "0" />
+				<pattr name = "channel" value = "1" />
+				<pattr name = "program" value = "0" />
+				<pattr name = "soundfont_menu" value = "Jeux14.SF2" />
+				<pattr name = "transpose" value = "-36" />
+			</patcher>
+		</patcher>
+	</slot>
+	<slot number = "20" name = "b_2">
+		<pattr name = "amp_keys" value = "0" />
+		<pattr name = "amp_size" value = "0 16" />
+		<pattr name = "amps" value = "1. 0. 0. 0. 0. 0. 0. 1. 0. 0. 0. 0. 0. 0. 0. 0. 0." />
+		<pattr name = "basepitch" value = "24." />
+		<pattr name = "envelope" value = "1000. 0. 1. 0. 0. 0 31.914892 1. 0 117.021271 0. 0 723.404236 0.2 0 984.042542 0. 0" />
+		<pattr name = "follow_mode" value = "current" />
+		<pattr name = "main_gain" value = "121" />
+		<pattr name = "pitch_keys" value = "0" />
+		<pattr name = "pitch_size" value = "0 16" />
+		<pattr name = "pitches" value = "14 2 6 4 1 2 4 1 2 20 16 20 18 14 14 16 13" />
+		<pattr name = "sampler_gain" value = "137" />
+		<pattr name = "smoothtime" value = "0" />
+		<pattr name = "synth_gain" value = "132" />
+		<pattr name = "synth_waveform" value = "&quot;1. 0.7 0.7 0.7 0.7 0.7 0.7&quot;" />
+		<patcher name = "synth">
+			<patcher name = "fluid">
+				<pattr name = "bank" value = "0" />
+				<pattr name = "channel" value = "1" />
+				<pattr name = "program" value = "0" />
+				<pattr name = "soundfont_menu" value = "Jeux14.SF2" />
+				<pattr name = "transpose" value = "-36" />
+			</patcher>
+		</patcher>
+	</slot>
+	<slot number = "21" name = "d_ 1">
+		<pattr name = "amp_keys" value = "0" />
+		<pattr name = "amp_size" value = "0 16" />
+		<pattr name = "amps" value = "0. 0.209581 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.772455 0. 0." />
+		<pattr name = "basepitch" value = "60." />
+		<pattr name = "envelope" value = "1000. 0. 1. 0. 0. 0 31.914892 1. 0 117.021271 0. 0 723.404236 0.2 0 984.042542 0. 0" />
+		<pattr name = "follow_mode" value = "current" />
+		<pattr name = "main_gain" value = "96" />
+		<pattr name = "pitch_keys" value = "0" />
+		<pattr name = "pitch_size" value = "0 16" />
+		<pattr name = "pitches" value = "10 22 18 20 23 22 20 23 22 4 8 4 6 10 10 8 11" />
+		<pattr name = "sampler_gain" value = "153" />
+		<pattr name = "smoothtime" value = "0" />
+		<pattr name = "synth_gain" value = "0" />
+		<pattr name = "synth_waveform" value = "&quot;1. 0.7 0.7 0.7 0.7 0.7 0.7&quot;" />
+		<patcher name = "synth">
+			<patcher name = "fluid">
+				<pattr name = "bank" value = "0" />
+				<pattr name = "channel" value = "1" />
+				<pattr name = "program" value = "0" />
+				<pattr name = "soundfont_menu" value = "Tabla.sf2" />
+				<pattr name = "transpose" value = "0" />
+			</patcher>
+		</patcher>
+	</slot>
+	<slot number = "22" name = "d_2 ">
+		<pattr name = "amp_keys" value = "0" />
+		<pattr name = "amp_size" value = "0 16" />
+		<pattr name = "amps" value = "0. 0. 0. 0. 0.191617 0. 0. 0. 0. 0. 0. 0.844311 0.419162 0. 0. 0. 0." />
+		<pattr name = "basepitch" value = "60." />
+		<pattr name = "envelope" value = "1000. 0. 1. 0. 0. 0 31.914892 1. 0 117.021271 0. 0 723.404236 0.2 0 984.042542 0. 0" />
+		<pattr name = "follow_mode" value = "current" />
+		<pattr name = "main_gain" value = "121" />
+		<pattr name = "pitch_keys" value = "0" />
+		<pattr name = "pitch_size" value = "0 16" />
+		<pattr name = "pitches" value = "10 22 18 20 23 22 20 23 22 4 8 4 6 10 10 8 11" />
+		<pattr name = "sampler_gain" value = "153" />
+		<pattr name = "smoothtime" value = "0" />
+		<pattr name = "synth_gain" value = "0" />
+		<pattr name = "synth_waveform" value = "&quot;1. 0.7 0.7 0.7 0.7 0.7 0.7&quot;" />
+		<patcher name = "synth">
+			<patcher name = "fluid">
+				<pattr name = "bank" value = "0" />
+				<pattr name = "channel" value = "1" />
+				<pattr name = "program" value = "0" />
+				<pattr name = "soundfont_menu" value = "Tabla.sf2" />
+				<pattr name = "transpose" value = "0" />
+			</patcher>
+		</patcher>
+	</slot>
+	<slot number = "23" name = "p_1">
+		<pattr name = "amp_keys" value = "0" />
+		<pattr name = "amp_size" value = "0 16" />
+		<pattr name = "amps" value = "0. 0. 0. 0. 0.191617 0. 0. 0. 0. 0. 0. 0.005988 0.419162 0. 0. 0. 0." />
+		<pattr name = "basepitch" value = "60." />
+		<pattr name = "envelope" value = "1000. 0. 1. 0. 0. 0 31.914892 1. 0 117.021271 0. 0 723.404236 0.2 0 984.042542 0. 0" />
+		<pattr name = "follow_mode" value = "current" />
+		<pattr name = "main_gain" value = "121" />
+		<pattr name = "pitch_keys" value = "0" />
+		<pattr name = "pitch_size" value = "0 16" />
+		<pattr name = "pitches" value = "10 22 18 20 23 22 20 23 22 4 8 4 6 10 10 8 11" />
+		<pattr name = "sampler_gain" value = "113" />
+		<pattr name = "smoothtime" value = "0" />
+		<pattr name = "synth_gain" value = "0" />
+		<pattr name = "synth_waveform" value = "&quot;1. 0.7 0.7 0.7 0.7 0.7 0.7&quot;" />
+		<patcher name = "synth">
+			<patcher name = "fluid">
+				<pattr name = "bank" value = "0" />
+				<pattr name = "channel" value = "1" />
+				<pattr name = "program" value = "0" />
+				<pattr name = "soundfont_menu" value = "Steinway_Grand_Piano_1.2.SF2" />
+				<pattr name = "transpose" value = "0" />
+			</patcher>
+		</patcher>
+	</slot>
+	<slot number = "24" name = "p_2">
+		<pattr name = "amp_keys" value = "0" />
+		<pattr name = "amp_size" value = "0 16" />
+		<pattr name = "amps" value = "0. 0. 0. 0.197605 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.772455 0. 0." />
+		<pattr name = "basepitch" value = "60." />
+		<pattr name = "envelope" value = "1000. 0. 1. 0. 0. 0 31.914892 1. 0 117.021271 0. 0 723.404236 0.2 0 984.042542 0. 0" />
+		<pattr name = "follow_mode" value = "current" />
+		<pattr name = "main_gain" value = "121" />
+		<pattr name = "pitch_keys" value = "0" />
+		<pattr name = "pitch_size" value = "0 16" />
+		<pattr name = "pitches" value = "10 22 18 20 23 22 20 23 22 4 8 4 6 10 10 8 11" />
+		<pattr name = "sampler_gain" value = "114" />
+		<pattr name = "smoothtime" value = "0" />
+		<pattr name = "synth_gain" value = "0" />
+		<pattr name = "synth_waveform" value = "&quot;1. 0.7 0.7 0.7 0.7 0.7 0.7&quot;" />
+		<patcher name = "synth">
+			<patcher name = "fluid">
+				<pattr name = "bank" value = "0" />
+				<pattr name = "channel" value = "1" />
+				<pattr name = "program" value = "0" />
+				<pattr name = "soundfont_menu" value = "Steinway_Grand_Piano_1.2.SF2" />
+				<pattr name = "transpose" value = "0" />
+			</patcher>
+		</patcher>
+	</slot>
+	<slot number = "25" name = "m_1">
+		<pattr name = "amp_keys" value = "0" />
+		<pattr name = "amp_size" value = "0 16" />
+		<pattr name = "amps" value = "0.766467 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0." />
+		<pattr name = "basepitch" value = "60." />
+		<pattr name = "envelope" value = "1000. 0. 1. 0. 0. 0 31.914892 1. 0 611.702087 0.866667 0 904.25531 0.333333 0 984.042542 0. 0" />
+		<pattr name = "follow_mode" value = "current" />
+		<pattr name = "main_gain" value = "116" />
+		<pattr name = "pitch_keys" value = "0" />
+		<pattr name = "pitch_size" value = "0 16" />
+		<pattr name = "pitches" value = "10 22 18 20 23 22 20 23 22 4 8 4 6 10 10 8 11" />
+		<pattr name = "sampler_gain" value = "114" />
+		<pattr name = "smoothtime" value = "0" />
+		<pattr name = "synth_gain" value = "132" />
+		<pattr name = "synth_waveform" value = "&quot;1. 0.1 0.5 0.333 0.25 0.666 0.0125&quot;" />
+		<patcher name = "synth">
+			<patcher name = "fluid">
+				<pattr name = "bank" value = "0" />
+				<pattr name = "channel" value = "1" />
+				<pattr name = "program" value = "0" />
+				<pattr name = "soundfont_menu" value = "Jeux14.SF2" />
+				<pattr name = "transpose" value = "0" />
+			</patcher>
+		</patcher>
+	</slot>
+	<slot number = "26" name = "m_2">
+		<pattr name = "amp_keys" value = "0" />
+		<pattr name = "amp_size" value = "0 16" />
+		<pattr name = "amps" value = "0.766467 0. 0. 0. 0. 0. 0. 0.550898 0. 0. 0. 0. 0. 0. 0.305389 0. 0." />
+		<pattr name = "basepitch" value = "60." />
+		<pattr name = "envelope" value = "1000. 0. 1. 0. 0. 0 31.914892 1. 0 611.702087 0.866667 0 904.25531 0.333333 0 984.042542 0. 0" />
+		<pattr name = "follow_mode" value = "current" />
+		<pattr name = "main_gain" value = "116" />
+		<pattr name = "pitch_keys" value = "0" />
+		<pattr name = "pitch_size" value = "0 16" />
+		<pattr name = "pitches" value = "10 22 18 20 23 22 20 23 22 4 8 4 6 10 10 8 11" />
+		<pattr name = "sampler_gain" value = "114" />
+		<pattr name = "smoothtime" value = "0" />
+		<pattr name = "synth_gain" value = "132" />
+		<pattr name = "synth_waveform" value = "&quot;1. 0.1 0.5 0.333 0.25 0.666 0.0125&quot;" />
+		<patcher name = "synth">
+			<patcher name = "fluid">
+				<pattr name = "bank" value = "0" />
+				<pattr name = "channel" value = "1" />
+				<pattr name = "program" value = "0" />
+				<pattr name = "soundfont_menu" value = "Jeux14.SF2" />
+				<pattr name = "transpose" value = "0" />
+			</patcher>
+		</patcher>
+	</slot>
+	<slot number = "27" name = "m_flat">
+		<pattr name = "amp_keys" value = "0" />
+		<pattr name = "amp_size" value = "0 16" />
+		<pattr name = "amps" value = "0.1 0.1 0.1 0.1 0.1 0.1 0.1 0.1 0.1 0.1 0.1 0.251497 0.1 0.1 0.1 0.1 0.1" />
+		<pattr name = "basepitch" value = "60." />
+		<pattr name = "envelope" value = "1000. 0. 1. 0. 0. 0 31.914892 1. 0 611.702087 0.866667 0 904.25531 0.333333 0 984.042542 0. 0" />
+		<pattr name = "follow_mode" value = "current" />
+		<pattr name = "main_gain" value = "116" />
+		<pattr name = "pitch_keys" value = "0" />
+		<pattr name = "pitch_size" value = "0 16" />
+		<pattr name = "pitches" value = "12 12 12 12 12 12 12 12 12 12 12 12 12 12 12 12 12" />
+		<pattr name = "sampler_gain" value = "114" />
+		<pattr name = "smoothtime" value = "0" />
+		<pattr name = "synth_gain" value = "132" />
+		<pattr name = "synth_waveform" value = "&quot;1. 0.1 0.5 0.333 0.25 0.666 0.0125&quot;" />
+		<patcher name = "synth">
+			<patcher name = "fluid">
+				<pattr name = "bank" value = "0" />
+				<pattr name = "channel" value = "1" />
+				<pattr name = "program" value = "0" />
+				<pattr name = "soundfont_menu" value = "Jeux14.SF2" />
+				<pattr name = "transpose" value = "0" />
+			</patcher>
+		</patcher>
+	</slot>
+	<slot number = "28" name = "p_flat ">
+		<pattr name = "amp_keys" value = "0" />
+		<pattr name = "amp_size" value = "0 16" />
+		<pattr name = "amps" value = "0.1 0.1 0.257485 0.1 0.1 0.1 0.1 0.1 0.1 0.1 0.1 0.1 0.1 0.1 0.1 0.1 0.1" />
+		<pattr name = "basepitch" value = "60." />
+		<pattr name = "envelope" value = "1000. 0. 1. 0. 0. 0 31.914892 1. 0 611.702087 0.866667 0 904.25531 0.333333 0 984.042542 0. 0" />
+		<pattr name = "follow_mode" value = "current" />
+		<pattr name = "main_gain" value = "116" />
+		<pattr name = "pitch_keys" value = "0" />
+		<pattr name = "pitch_size" value = "0 16" />
+		<pattr name = "pitches" value = "12 12 12 12 12 12 12 12 12 12 12 12 12 12 12 12 12" />
+		<pattr name = "sampler_gain" value = "114" />
+		<pattr name = "smoothtime" value = "0" />
+		<pattr name = "synth_gain" value = "128" />
+		<pattr name = "synth_waveform" value = "&quot;1. 0.7 0.7 0.7 0.7 0.7 0.7&quot;" />
+		<patcher name = "synth">
+			<patcher name = "fluid">
+				<pattr name = "bank" value = "0" />
+				<pattr name = "channel" value = "1" />
+				<pattr name = "program" value = "0" />
+				<pattr name = "soundfont_menu" value = "Steinway_Grand_Piano_1.2.SF2" />
+				<pattr name = "transpose" value = "0" />
+			</patcher>
+		</patcher>
+	</slot>
+	<slot number = "29" name = "d_flat  ">
+		<pattr name = "amp_keys" value = "0" />
+		<pattr name = "amp_size" value = "0 16" />
+		<pattr name = "amps" value = "0.1 0.1 0.1 0.1 0.1 0.1 0.1 0.1 0.1 0.1 0.1 0.1 0.1 0.1 0.1 0.1 0.1" />
+		<pattr name = "basepitch" value = "60." />
+		<pattr name = "envelope" value = "1000. 0. 1. 0. 0. 0 31.914892 1. 0 611.702087 0.866667 0 904.25531 0.333333 0 984.042542 0. 0" />
+		<pattr name = "follow_mode" value = "current" />
+		<pattr name = "main_gain" value = "116" />
+		<pattr name = "pitch_keys" value = "0" />
+		<pattr name = "pitch_size" value = "0 16" />
+		<pattr name = "pitches" value = "24 22 22 22 23 22 24 22 22 22 23 22 24 22 22 24 22" />
+		<pattr name = "sampler_gain" value = "114" />
+		<pattr name = "smoothtime" value = "0" />
+		<pattr name = "synth_gain" value = "2" />
+		<pattr name = "synth_waveform" value = "&quot;1. 0.7 0.7 0.7 0.7 0.7 0.7&quot;" />
+		<patcher name = "synth">
+			<patcher name = "fluid">
+				<pattr name = "bank" value = "0" />
+				<pattr name = "channel" value = "1" />
+				<pattr name = "program" value = "0" />
+				<pattr name = "soundfont_menu" value = "Tabla.sf2" />
+				<pattr name = "transpose" value = "0" />
+			</patcher>
+		</patcher>
+	</slot>
+	<slot number = "30" name = "b_flat   ">
+		<pattr name = "amp_keys" value = "0" />
+		<pattr name = "amp_size" value = "0 16" />
+		<pattr name = "amps" value = "0.1 0.1 0.1 0.1 0.1 0.1 0.1 0.1 0.1 0.1 0.1 0.299401 0.1 0.1 0.1 0.1 0.1" />
+		<pattr name = "basepitch" value = "24." />
+		<pattr name = "envelope" value = "1000. 0. 1. 0. 0. 0 31.914892 1. 0 117.021271 0. 0 723.404236 0.2 0 984.042542 0. 0" />
+		<pattr name = "follow_mode" value = "current" />
+		<pattr name = "main_gain" value = "121" />
+		<pattr name = "pitch_keys" value = "0" />
+		<pattr name = "pitch_size" value = "0 16" />
+		<pattr name = "pitches" value = "12 12 12 12 12 12 12 12 12 12 12 3 12 12 12 12 12" />
+		<pattr name = "sampler_gain" value = "153" />
+		<pattr name = "smoothtime" value = "0" />
+		<pattr name = "synth_gain" value = "157" />
+		<pattr name = "synth_waveform" value = "&quot;1. 0.7 0.7 0.7 0.7 0.7 0.7&quot;" />
+		<patcher name = "synth">
+			<patcher name = "fluid">
+				<pattr name = "bank" value = "0" />
+				<pattr name = "channel" value = "1" />
+				<pattr name = "program" value = "0" />
+				<pattr name = "soundfont_menu" value = "Jeux14.SF2" />
+				<pattr name = "transpose" value = "-36" />
+			</patcher>
+		</patcher>
+	</slot>
+	<slot number = "31" name = "yl2_p1">
+		<pattr name = "amp_keys" value = "1" />
+		<pattr name = "amp_size" value = "0 12" />
+		<pattr name = "amps" value = "0.898204 0.053892 0.053892 0.898204 0.047904 0.047904 0.898204 0.047904 0.047904 0.898204 0.047904 0.9 0.041916 0.02994 0.02994 0.023952 0.005988" />
+		<pattr name = "basepitch" value = "60." />
+		<pattr name = "envelope" value = "1000. 0. 1. 0. 0. 0 31.914892 1. 0 117.021271 0. 0 186.170212 0.64 0 202.127655 0.546667 0 723.404236 0.2 0 984.042542 0. 0" />
+		<pattr name = "follow_mode" value = "current" />
+		<pattr name = "main_gain" value = "111" />
+		<pattr name = "pitch_keys" value = "0" />
+		<pattr name = "pitch_size" value = "0 16" />
+		<pattr name = "pitches" value = "0 19 8 5 12 20 22 20 14 22 3 10 7 19 17 15 19" />
+		<pattr name = "sampler_gain" value = "125" />
+		<pattr name = "smoothtime" value = "24" />
+		<pattr name = "synth_gain" value = "127" />
+		<pattr name = "synth_waveform" value = "&quot;1. 0.5 0.9 0.4 0.8 0.3 0.7&quot;" />
+		<patcher name = "synth">
+			<patcher name = "fluid">
+				<pattr name = "bank" value = "0" />
+				<pattr name = "channel" value = "1" />
+				<pattr name = "program" value = "0" />
+				<pattr name = "soundfont_menu" value = "Gort's_MiniPiano_J1.SF2" />
+				<pattr name = "transpose" value = "0" />
+			</patcher>
+		</patcher>
+	</slot>
+	<slot number = "32" name = "yl2_p2">
+		<pattr name = "amp_keys" value = "1" />
+		<pattr name = "amp_size" value = "0 12" />
+		<pattr name = "amps" value = "0. 0.562874 0.556886 0.017964 0.51497 0.538922 0.017964 0.497006 0.54491 0.011976 0.54491 0.017964 0.60479 0.02994 0.02994 0.023952 0.005988" />
+		<pattr name = "basepitch" value = "60." />
+		<pattr name = "envelope" value = "1000. 0. 1. 0. 0. 0 31.914892 1. 0 117.021271 0. 0 186.170212 0.64 0 202.127655 0.546667 0 723.404236 0.2 0 984.042542 0. 0" />
+		<pattr name = "follow_mode" value = "current" />
+		<pattr name = "main_gain" value = "111" />
+		<pattr name = "pitch_keys" value = "0" />
+		<pattr name = "pitch_size" value = "0 16" />
+		<pattr name = "pitches" value = "9 21 14 16 21 6 11 14 6 9 18 16 4 11 18 23 4" />
+		<pattr name = "sampler_gain" value = "137" />
+		<pattr name = "smoothtime" value = "3" />
+		<pattr name = "synth_gain" value = "112" />
+		<pattr name = "synth_waveform" value = "&quot;1. 0.5 0.9 0.4 0.8 0.3 0.7&quot;" />
+		<patcher name = "synth">
+			<patcher name = "fluid">
+				<pattr name = "bank" value = "0" />
+				<pattr name = "channel" value = "1" />
+				<pattr name = "program" value = "0" />
+				<pattr name = "soundfont_menu" value = "Naturally_Decaying_B-#B6481.sf2" />
+				<pattr name = "transpose" value = "0" />
+			</patcher>
+		</patcher>
+	</slot>
+	<slot number = "33" name = "test2">
+		<pattr name = "amp_keys" value = "0" />
+		<pattr name = "amp_size" value = "0 16" />
+		<pattr name = "amps" value = "0. 0.502994 0.491018 0.48503 0.479042 0.473054 0.461078 0.45509 0.446108 0.42515 0.401198 0.377246 0.347305 0. 0.772455 0. 0." />
+		<pattr name = "basepitch" value = "60." />
+		<pattr name = "envelope" value = "1000. 0. 1. 0. 0. 0 31.914892 1. 0 117.021271 0. 0 723.404236 0.2 0 984.042542 0. 0" />
+		<pattr name = "follow_mode" value = "current" />
+		<pattr name = "main_gain" value = "121" />
+		<pattr name = "pitch_keys" value = "0" />
+		<pattr name = "pitch_size" value = "0 16" />
+		<pattr name = "pitches" value = "10 22 18 20 23 22 20 23 22 4 8 4 6 10 10 8 11" />
+		<pattr name = "sampler_gain" value = "153" />
+		<pattr name = "smoothtime" value = "0" />
+		<pattr name = "synth_gain" value = "0" />
+		<pattr name = "synth_waveform" value = "&quot;1. 0.7 0.7 0.7 0.7 0.7 0.7&quot;" />
+		<patcher name = "synth">
+			<patcher name = "fluid">
+				<pattr name = "bank" value = "0" />
+				<pattr name = "channel" value = "1" />
+				<pattr name = "program" value = "0" />
+				<pattr name = "soundfont_menu" value = "Tabla.sf2" />
+				<pattr name = "transpose" value = "0" />
+			</patcher>
+		</patcher>
+	</slot>
+</pattrstorage>
+

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="iso-8859-1" standalone="yes"?>
+
+<pattrstorage name = "munging">
+	<slot number = "1">
+		<pattr name = "delay" value = "800" />
+		<pattr name = "delay[1]" value = "1200" />
+		<pattr name = "delay[2]" value = "1000" />
+		<pattr name = "delay[3]" value = "400" />
+		<pattr name = "delay[4]" value = "1000" />
+		<pattr name = "delay[5]" value = "1200" />
+		<pattr name = "delay[6]" value = "400" />
+		<pattr name = "delay[7]" value = "800" />
+	</slot>
+	<slot number = "2">
+		<pattr name = "delay" value = "760" />
+		<pattr name = "delay[1]" value = "1100" />
+		<pattr name = "delay[2]" value = "950" />
+		<pattr name = "delay[3]" value = "350" />
+		<pattr name = "delay[4]" value = "900" />
+		<pattr name = "delay[5]" value = "1150" />
+		<pattr name = "delay[6]" value = "450" />
+		<pattr name = "delay[7]" value = "870" />
+	</slot>
+	<slot number = "3">
+		<pattr name = "delay" value = "140" />
+		<pattr name = "delay[1]" value = "320" />
+		<pattr name = "delay[2]" value = "230" />
+		<pattr name = "delay[3]" value = "80" />
+		<pattr name = "delay[4]" value = "190" />
+		<pattr name = "delay[5]" value = "280" />
+		<pattr name = "delay[6]" value = "110" />
+		<pattr name = "delay[7]" value = "180" />
+	</slot>
+	<slot number = "4">
+		<pattr name = "delay" value = "760" />
+		<pattr name = "delay[1]" value = "1100" />
+		<pattr name = "delay[2]" value = "950" />
+		<pattr name = "delay[3]" value = "350" />
+		<pattr name = "delay[4]" value = "900" />
+		<pattr name = "delay[5]" value = "1150" />
+		<pattr name = "delay[6]" value = "450" />
+		<pattr name = "delay[7]" value = "870" />
+	</slot>
+	<slot number = "5">
+		<pattr name = "delay" value = "800" />
+		<pattr name = "delay[1]" value = "1200" />
+		<pattr name = "delay[2]" value = "1000" />
+		<pattr name = "delay[3]" value = "400" />
+		<pattr name = "delay[4]" value = "1000" />
+		<pattr name = "delay[5]" value = "1200" />
+		<pattr name = "delay[6]" value = "400" />
+		<pattr name = "delay[7]" value = "800" />
+	</slot>
+</pattrstorage>
+

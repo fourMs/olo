@@ -1,0 +1,3 @@
+echo Starting Clix...
+cd Crystalis
+chuck wind-o-lin.ck server-local.ck
