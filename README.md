@@ -21,6 +21,19 @@ We follow the spirit of [PLOrk](https://plork.cs.princeton.edu/) (Princeton Lapt
 | [Munge](https://fourms.github.io/olo/apps/munge/) | Speak or play into a living delay cloud |
 | [Tap Bloom](https://fourms.github.io/olo/apps/tap-bloom/) | Click to plant slow, pulsing pentatonic blooms |
 | [Green Button](https://fourms.github.io/olo/apps/green-button/) | Hold for a swelling drone (Space works too) |
+| [XY-FM](https://fourms.github.io/olo/apps/xy-fm/) | Full-screen FM — mouse = pitch & depth |
+| [Horizon](https://fourms.github.io/olo/apps/horizon/) | Shepard tone — tilt or drag vertically |
+| [Slice Keys](https://fourms.github.io/olo/apps/slice-keys/) | Record mic, keys 1–8 = slices |
+| [Vision Grain](https://fourms.github.io/olo/apps/vision-grain/) | Camera motion → granular cloud |
+| [Circular Groove](https://fourms.github.io/olo/apps/circular-groove/) | Euclidean rings + evolving L-system rules |
+| [Beat Matrix](https://fourms.github.io/olo/apps/beat-matrix/) | QWERTY 16×4 step sequencer |
+| [Filter Ladder](https://fourms.github.io/olo/apps/filter-ladder/) | Tilt/mouse opens ladder filter |
+| [Mic Theremin](https://fourms.github.io/olo/apps/mic-theremin/) | Hum → pitch-tracked sine |
+| [Room Wash](https://fourms.github.io/olo/apps/room-wash/) | Mic level → reverb wash |
+| [Shadow Seq](https://fourms.github.io/olo/apps/shadow-seq/) | Webcam shadows → 8-step rhythm |
+| [Wavetable Scan](https://fourms.github.io/olo/apps/wavetable-scan/) | Mouse morphs wavetables |
+
+Full sensor catalog: [docs/LAPTOP-INSTRUMENTS.md](docs/LAPTOP-INSTRUMENTS.md).
 
 **Ensemble tip:** In **CliX** or **Crystalis**, use the **Host** tab to share a sync link so every laptop shares the same grid clock.
 

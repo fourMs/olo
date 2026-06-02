@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Shadow Seq — OLO</title>
+  <link rel="stylesheet" href="../../shared/ui.css" />
+</head>
+<body class="app-shell seq-app">
+  <header class="app-header">
+    <a class="back-link" href="../../">←</a>
+    <h1>Shadow Seq</h1>
+  </header>
+  <div class="learn-panel panel" id="learnPanel">
+    <h2>Camera → 8-step mask</h2>
+    <p>Webcam frame split into <strong>8 zones</strong>. Darker zones = on-steps for the drum voice. <strong>Space</strong> play clock.</p>
+    <p>Move hands to cast shadows. OMO Shadow Sequencer — full-width camera stage.</p>
+  </div>
+  <div class="seq-toolbar">
+    <label for="bpm">BPM</label>
+    <input type="range" id="bpm" min="70" max="140" value="96" />
+    <span id="bpmVal">96</span>
+    <button type="button" class="btn btn-play" id="playBtn">▶</button>
+    <label for="thresh">Threshold</label>
+    <input type="range" id="thresh" min="10" max="200" value="90" />
+  </div>
+  <div class="stage-full stage-shadow">
+    <video id="vid" playsinline muted autoplay hidden></video>
+    <canvas id="viz"></canvas>
+    <div class="shadow-steps" id="steps"></div>
+  </div>
+  <script type="module">
+    import { bindLearn, registerAudioBoot, startAudio } from "../../shared/app.js";
+    import { createMasterBus } from "../../shared/audio.js";
+    import { DRUM_SEQ_ROWS } from "../../shared/drum-sounds.js";
+
+    bindLearn();
+    const ZONES = 8;
+    const vid = document.getElementById("vid");
+    const viz = document.getElementById("viz");
+    const vg = viz.getContext("2d");
+    const stepsEl = document.getElementById("steps");
+    const mask = Array(ZONES).fill(false);
+    let ctx, master, playing = false, step = 0, nextTime = 0;
+
+    for (let i = 0; i < ZONES; i++) {
+      const d = document.createElement("div");
+      d.className = "shadow-step";
+      d.dataset.i = String(i);
+      stepsEl.appendChild(d);
+    }
+
+    function redrawSteps() {
+      stepsEl.querySelectorAll(".shadow-step").forEach((el, i) => {
+        el.classList.toggle("on", mask[i]);
+        el.classList.toggle("play", playing && i === step % ZONES);
+      });
+    }
+
+    async function build(c) {
+      ctx = c;
+      ({ master } = createMasterBus(c, 0.7));
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: "user", width: { ideal: 320 }, height: { ideal: 120 } },
+        audio: false,
+      });
+      vid.srcObject = stream;
+      await vid.play();
+      resize();
+      const loop = () => {
+        if (!ctx) return;
+        const w = viz.width;
+        const h = viz.height;
+        vg.drawImage(vid, 0, 0, w, h);
+        const frame = vg.getImageData(0, 0, w, h);
+        const thresh = +document.getElementById("thresh").value;
+        const zoneW = Math.floor(w / ZONES);
+        for (let z = 0; z < ZONES; z++) {
+          let sum = 0;
+          let n = 0;
+          for (let x = z * zoneW; x < (z + 1) * zoneW; x += 4) {
+            for (let y = 0; y < h; y += 4) {
+              const i = (y * w + x) * 4;
+              sum += frame.data[i] + frame.data[i + 1] + frame.data[i + 2];
+              n++;
+            }
+          }
+          const bright = sum / (n * 3);
+          mask[z] = bright < thresh;
+        }
+        redrawSteps();
+        requestAnimationFrame(loop);
+      };
+      loop();
+    }
+    registerAudioBoot(build);
+
+    function resize() {
+      const box = viz.parentElement.getBoundingClientRect();
+      const dpr = devicePixelRatio || 1;
+      viz.width = Math.floor(box.width * dpr);
+      viz.height = Math.floor(box.height * 0.55 * dpr);
+    }
+
+    function sched() {
+      if (!playing) return;
+      const now = ctx.currentTime;
+      const base = 60 / +document.getElementById("bpm").value / 2;
+      while (nextTime <= now + 0.05) {
+        const zi = step % ZONES;
+        if (mask[zi]) DRUM_SEQ_ROWS[zi % DRUM_SEQ_ROWS.length].play(ctx, master);
+        step++;
+        redrawSteps();
+        nextTime += base;
+      }
+      requestAnimationFrame(sched);
+    }
+
+    document.getElementById("playBtn").onclick = async () => {
+      await startAudio(build);
+      playing = !playing;
+      const btn = document.getElementById("playBtn");
+      if (!playing) {
+        btn.textContent = "▶";
+        redrawSteps();
+        return;
+      }
+      step = 0;
+      nextTime = ctx.currentTime + 0.05;
+      btn.textContent = "■";
+      sched();
+    };
+    document.getElementById("bpm").oninput = (e) => {
+      document.getElementById("bpmVal").textContent = e.target.value;
+    };
+    window.addEventListener("keydown", (e) => {
+      if (e.code === "Space") {
+        e.preventDefault();
+        document.getElementById("playBtn").click();
+      }
+    });
+    window.addEventListener("resize", resize);
+  </script>
+</body>
+</html>

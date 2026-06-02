@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Room Wash — OLO</title>
+  <link rel="stylesheet" href="../../shared/ui.css" />
+</head>
+<body class="app-shell">
+  <header class="app-header">
+    <a class="back-link" href="../../">←</a>
+    <h1>Room Wash</h1>
+  </header>
+  <div class="learn-panel panel" id="learnPanel">
+    <h2>Mic loudness → reverb</h2>
+    <p>Room energy (mic RMS) controls how much signal goes through a long convolution reverb. Louder in the room = more wash.</p>
+    <p><strong>Mouse Y</strong> sets dry/wet bias. OMO Room Reverb Send — laptop full screen.</p>
+  </div>
+  <p class="status-bar hud-bar" id="hud">Mic → reverb send</p>
+  <div class="stage-full stage-wash" id="stage">
+    <div class="wash-meter"><span id="meter"></span></div>
+  </div>
+  <script type="module">
+    import { bindLearn, registerAudioBoot, startAudio } from "../../shared/app.js";
+    import { connectMicAnalyser, createMasterBus, getMicStream } from "../../shared/audio.js";
+    import { pointerNorm } from "../../shared/laptop-sensors.js";
+
+    bindLearn();
+    const stage = document.getElementById("stage");
+    let ctx, analyser, dry, wetSend, conv;
+
+    async function build(c) {
+      ctx = c;
+      const { master } = createMasterBus(c, 0.65);
+      const stream = await getMicStream();
+      analyser = c.createAnalyser();
+      analyser.fftSize = 1024;
+      connectMicAnalyser(c, stream, analyser, { inputGain: 1.5 });
+      dry = c.createGain();
+      wetSend = c.createGain();
+      const len = Math.floor(c.sampleRate * 4);
+      const buf = c.createBuffer(2, len, c.sampleRate);
+      for (let ch = 0; ch < 2; ch++) {
+        const d = buf.getChannelData(ch);
+        for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / len) ** 2;
+      }
+      conv = c.createConvolver();
+      conv.buffer = buf;
+      const wet = c.createGain();
+      wet.gain.value = 0.85;
+      analyser.connect(dry);
+      analyser.connect(wetSend);
+      dry.connect(master);
+      wetSend.connect(conv);
+      conv.connect(wet);
+      wet.connect(master);
+      let bias = 0.35;
+      stage.addEventListener("pointermove", (e) => {
+        bias = 1 - pointerNorm(stage, e).ny;
+      });
+      const data = new Uint8Array(analyser.fftSize);
+      const loop = () => {
+        analyser.getByteTimeDomainData(data);
+        let p = 0;
+        for (let i = 0; i < data.length; i++) p = Math.max(p, Math.abs(data[i] - 128));
+        const rms = p / 128;
+        document.getElementById("meter").style.width = `${Math.min(100, rms * 120)}%`;
+        const t = ctx.currentTime;
+        const w = Math.min(0.92, rms * 1.4 * bias);
+        wetSend.gain.setTargetAtTime(w, t, 0.08);
+        dry.gain.setTargetAtTime(0.15 + (1 - w) * 0.35, t, 0.08);
+        requestAnimationFrame(loop);
+      };
+      loop();
+    }
+    registerAudioBoot(build, { mic: true });
+    document.body.addEventListener("pointerdown", () => void startAudio(build), { once: true });
+  </script>
+</body>
+</html>

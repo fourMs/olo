@@ -16,6 +16,29 @@ The `web/` folder is published automatically when `main` is pushed (GitHub Actio
 | [Tap Bloom](https://fourms.github.io/olo/apps/tap-bloom/) | Texture — generative pulsing blooms | Adapted from [OMO Tap Bloom](https://github.com/fourMs/omo) |
 | [Green Button](https://fourms.github.io/olo/apps/green-button/) | Drone — hold to swell | Adapted from [OMO Green Button](https://github.com/fourMs/omo) |
 
+### Laptop-native (sensor labs)
+
+| App | Sensors | Synthesis |
+|-----|---------|-----------|
+| [XY-FM](https://fourms.github.io/olo/apps/xy-fm/) | Mouse | 2-op FM, full-screen pad |
+| [Horizon](https://fourms.github.io/olo/apps/horizon/) | Tilt · mouse Y · keyboard | Shepard tone |
+| [Slice Keys](https://fourms.github.io/olo/apps/slice-keys/) | Mic · keyboard · mouse | Buffer slices |
+| [Vision Grain](https://fourms.github.io/olo/apps/vision-grain/) | Camera · keyboard | Motion → granular |
+
+### Sequencers & sensor labs
+
+| App | Sensors | Role |
+|-----|---------|------|
+| [Circular Groove](https://fourms.github.io/olo/apps/circular-groove/) | Keyboard · click | Euclidean rings + L-system evolution each bar |
+| [Beat Matrix](https://fourms.github.io/olo/apps/beat-matrix/) | Keyboard | 16×4 step grid |
+| [Filter Ladder](https://fourms.github.io/olo/apps/filter-ladder/) | Tilt · mouse | Ladder synth |
+| [Mic Theremin](https://fourms.github.io/olo/apps/mic-theremin/) | Mic · mouse | Pitch sine |
+| [Room Wash](https://fourms.github.io/olo/apps/room-wash/) | Mic · mouse | Reverb send |
+| [Shadow Seq](https://fourms.github.io/olo/apps/shadow-seq/) | Camera | 8-zone mask |
+| [Wavetable Scan](https://fourms.github.io/olo/apps/wavetable-scan/) | Mouse | Wave morph |
+
+More concepts and backlog: [`docs/LAPTOP-INSTRUMENTS.md`](https://github.com/fourMs/olo/blob/main/docs/LAPTOP-INSTRUMENTS.md).
+
 ## Ensemble sync (CliX & Crystalis)
 
 Replaces the old ChucK clock programs (`server-multi.ck`, `server-local.ck`):

@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#080a0e" />
+  <title>Circular Groove — OLO</title>
+  <link rel="stylesheet" href="../../shared/ui.css" />
+</head>
+<body class="app-shell seq-app">
+  <header class="app-header">
+    <a class="back-link" href="../../">←</a>
+    <h1>Circular Groove</h1>
+  </header>
+  <div class="learn-panel panel" id="learnPanel">
+    <h2>Euclidean rings + rule evolution</h2>
+    <p>Full-screen circular sequencer. Each ring is a <strong>Euclidean</strong> rhythm <code>E(p,16)</code>. <strong>Space</strong> play/stop.</p>
+    <p><strong>[ ]</strong> phase shift selected ring · <strong>- +</strong> fewer/more pulses · <strong>1–4</strong> select ring · click a ring to select.</p>
+    <p>Each <strong>bar</strong>, L-system rules <strong>rewrite</strong>: patterns toggle, phases rotate, pulses drift — polyrhythms that keep developing (OMO Euclidean Rings + L-System Groove).</p>
+  </div>
+  <div class="seq-toolbar">
+    <div class="control-row">
+      <label for="bpm">BPM</label>
+      <input type="range" id="bpm" min="60" max="160" value="100" />
+      <span id="bpmVal">100</span>
+      <button type="button" class="btn btn-play" id="playBtn">▶</button>
+      <button type="button" class="btn-secondary btn-sm" id="resetBtn">Reset rules</button>
+    </div>
+    <p class="seq-meta" id="meta">Gen 0 · A→AB, B→A</p>
+    <div class="control-row" id="ringPick"></div>
+    <div class="control-row">
+      <span id="ringLabel">Kick</span>
+      <button type="button" class="btn-secondary btn-sm" id="phaseDown">Phase −</button>
+      <span id="phaseVal">0</span>
+      <button type="button" class="btn-secondary btn-sm" id="phaseUp">Phase +</button>
+      <button type="button" class="btn-secondary btn-sm" id="pulseDown">Pulses −</button>
+      <button type="button" class="btn-secondary btn-sm" id="pulseUp">Pulses +</button>
+    </div>
+  </div>
+  <div class="stage-full stage-seq">
+    <canvas id="seq" class="canvas-fill"></canvas>
+  </div>
+  <script type="module">
+    import { bindLearn, registerAudioBoot, startAudio } from "../../shared/app.js";
+    import { createMasterBus } from "../../shared/audio.js";
+    import { drawCircularSeq, hitCircularSeq } from "../../shared/circular-seq.js";
+    import { createCircularGrooveEngine } from "../../shared/groove-evolve.js";
+    import { DRUM_SEQ_ROWS } from "../../shared/drum-sounds.js";
+
+    bindLearn();
+
+    const STEPS = 16;
+    const canvas = document.getElementById("seq");
+    const g = canvas.getContext("2d");
+    const engine = createCircularGrooveEngine();
+    let ctx, master, built = false;
+    let playing = false;
+    let stepIndex = 0;
+    let nextTime = 0;
+    let playStep = -1;
+    let selectedRing = 0;
+    let barCount = 0;
+
+    const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
+
+    function updateMeta() {
+      document.getElementById("meta").textContent = `Gen ${engine.getGeneration()} · ${engine.getRuleLabel()}`;
+      document.getElementById("phaseVal").textContent = String(engine.specs[selectedRing].phase);
+      document.getElementById("ringLabel").textContent = DRUM_SEQ_ROWS[selectedRing].name;
+      document.querySelectorAll("#ringPick button").forEach((btn, i) => {
+        btn.classList.toggle("active", i === selectedRing);
+      });
+    }
+
+    function selectRing(ri) {
+      selectedRing = clamp(ri, 0, DRUM_SEQ_ROWS.length - 1);
+      updateMeta();
+      redraw();
+    }
+
+    function sizeCanvas() {
+      const box = canvas.parentElement.getBoundingClientRect();
+      const dpr = devicePixelRatio || 1;
+      canvas.width = Math.max(1, Math.floor(box.width * dpr));
+      canvas.height = Math.max(1, Math.floor(box.height * dpr));
+    }
+
+    function redraw() {
+      sizeCanvas();
+      drawCircularSeq(g, canvas.width, canvas.height, devicePixelRatio || 1, {
+        pattern: engine.pattern,
+        rows: DRUM_SEQ_ROWS,
+        playStep: playing ? playStep : -1,
+        selectedRing,
+      });
+    }
+
+    function boot(c) {
+      ctx = c;
+      ({ master } = createMasterBus(c, 0.68));
+      built = true;
+      updateMeta();
+      redraw();
+    }
+
+    registerAudioBoot(boot);
+
+    DRUM_SEQ_ROWS.forEach((row, ri) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "btn-secondary btn-sm";
+      btn.textContent = `${row.icon} ${row.name}`;
+      btn.onclick = () => selectRing(ri);
+      document.getElementById("ringPick").appendChild(btn);
+    });
+
+    canvas.addEventListener("pointerdown", async (e) => {
+      const r = canvas.getBoundingClientRect();
+      const px = ((e.clientX - r.left) / r.width) * canvas.width;
+      const py = ((e.clientY - r.top) / r.height) * canvas.height;
+      const hit = hitCircularSeq(px, py, canvas.width, canvas.height, DRUM_SEQ_ROWS.length, STEPS);
+      if (!hit) return;
+      await startAudio(boot);
+      selectRing(hit.ring);
+      engine.toggleCell(hit.ring, hit.step);
+      redraw();
+    });
+
+    function scheduler() {
+      if (!playing || !ctx) return;
+      const now = ctx.currentTime;
+      const base = 60 / +document.getElementById("bpm").value / 4;
+      while (nextTime <= now + 0.05) {
+        const col = stepIndex;
+        if (col === 0 && barCount > 0) {
+          engine.evolveBar();
+          updateMeta();
+        }
+        playStep = col;
+        redraw();
+        for (let ri = 0; ri < DRUM_SEQ_ROWS.length; ri++) {
+          if (engine.pattern[ri]?.[col]) DRUM_SEQ_ROWS[ri].play(ctx, master);
+        }
+        nextTime += base;
+        stepIndex = (col + 1) % STEPS;
+        if (stepIndex === 0) barCount++;
+      }
+      requestAnimationFrame(scheduler);
+    }
+
+    document.getElementById("phaseDown").onclick = () => {
+      engine.setRingPhase(selectedRing, engine.specs[selectedRing].phase - 1);
+      updateMeta();
+      redraw();
+    };
+    document.getElementById("phaseUp").onclick = () => {
+      engine.setRingPhase(selectedRing, engine.specs[selectedRing].phase + 1);
+      updateMeta();
+      redraw();
+    };
+    document.getElementById("pulseDown").onclick = () => {
+      engine.nudgePulses(selectedRing, -1);
+      updateMeta();
+      redraw();
+    };
+    document.getElementById("pulseUp").onclick = () => {
+      engine.nudgePulses(selectedRing, 1);
+      updateMeta();
+      redraw();
+    };
+    document.getElementById("resetBtn").onclick = () => {
+      engine.resetLSystem();
+      barCount = 0;
+      updateMeta();
+      redraw();
+    };
+    document.getElementById("bpm").oninput = (e) => {
+      document.getElementById("bpmVal").textContent = e.target.value;
+    };
+
+    async function togglePlay() {
+      await startAudio(boot);
+      playing = !playing;
+      const btn = document.getElementById("playBtn");
+      if (!playing) {
+        playStep = -1;
+        btn.textContent = "▶";
+        btn.classList.remove("active");
+        redraw();
+        return;
+      }
+      stepIndex = 0;
+      barCount = 0;
+      nextTime = ctx.currentTime + 0.05;
+      btn.textContent = "■";
+      btn.classList.add("active");
+      scheduler();
+    }
+
+    document.getElementById("playBtn").onclick = () => void togglePlay();
+
+    window.addEventListener("keydown", (e) => {
+      if (e.target.closest("input")) return;
+      if (e.code === "Space") {
+        e.preventDefault();
+        void togglePlay();
+        return;
+      }
+      if (e.key === "[") engine.setRingPhase(selectedRing, engine.specs[selectedRing].phase - 1);
+      if (e.key === "]") engine.setRingPhase(selectedRing, engine.specs[selectedRing].phase + 1);
+      if (e.key === "-" || e.key === "_") engine.nudgePulses(selectedRing, -1);
+      if (e.key === "=" || e.key === "+") engine.nudgePulses(selectedRing, 1);
+      const d = parseInt(e.key, 10);
+      if (d >= 1 && d <= 4) selectRing(d - 1);
+      if ("[]-+=".includes(e.key) || (d >= 1 && d <= 4)) {
+        updateMeta();
+        redraw();
+      }
+    });
+
+    new ResizeObserver(() => redraw()).observe(canvas.parentElement);
+    updateMeta();
+    redraw();
+  </script>
+</body>
+</html>

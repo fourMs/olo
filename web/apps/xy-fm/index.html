@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#080a0e" />
+  <title>XY-FM — OLO</title>
+  <link rel="stylesheet" href="../../shared/ui.css" />
+</head>
+<body class="app-shell">
+  <header class="app-header">
+    <a class="back-link" href="../../">←</a>
+    <h1>XY-FM</h1>
+  </header>
+  <div class="learn-panel panel" id="learnPanel">
+    <h2>Full-screen FM pad</h2>
+    <p>Turn <strong>Audio on</strong>, then <strong>hold</strong> anywhere on the stage. <strong>X</strong> = pitch, <strong>Y</strong> = modulation depth and brightness.</p>
+    <p>Keys <strong>1–4</strong> switch routing (classic FM, self-mod, parallel, chaos). Inspired by OMO FM Matrix / Kaoss Pad — built for laptop mouse or trackpad.</p>
+  </div>
+  <p class="status-bar hud-bar" id="hud">preset 1 · release pad to silence</p>
+  <div class="stage-full" id="stage">
+    <div class="stage-reticle" id="dot"></div>
+  </div>
+  <script type="module">
+    import { bindLearn, registerAudioBoot, startAudio } from "../../shared/app.js";
+    import { createMasterBus } from "../../shared/audio.js";
+    import { clamp, pointerNorm } from "../../shared/laptop-sensors.js";
+
+    bindLearn();
+
+    const stage = document.getElementById("stage");
+    const dot = document.getElementById("dot");
+    const hud = document.getElementById("hud");
+    const PRESETS = ["M→C", "M→M", "Parallel", "Chaos"];
+
+    let ctx, built = false;
+    let preset = 0;
+    let holding = false;
+    let pid = null;
+    let carrier, mod, modGain, fbGain, ampGain, modAmp, filter;
+
+    const mapX = (nx) => 72 * Math.pow(880 / 72, nx);
+
+    function wirePreset() {
+      try { modGain.disconnect(); } catch { /* noop */ }
+      try { fbGain.disconnect(); } catch { /* noop */ }
+      fbGain.gain.value = 0;
+      const id = ["mc", "mm", "par", "chaos"][preset];
+      if (id === "mc") modGain.connect(carrier.frequency);
+      else if (id === "mm") modGain.connect(mod.frequency);
+      else if (id === "chaos") {
+        modGain.connect(carrier.frequency);
+        fbGain.gain.value = 0.35;
+        fbGain.connect(mod.frequency);
+      }
+    }
+
+    function build(c) {
+      ctx = c;
+      const { master } = createMasterBus(c, 0.52);
+      carrier = c.createOscillator();
+      mod = c.createOscillator();
+      modGain = c.createGain();
+      fbGain = c.createGain();
+      ampGain = c.createGain();
+      modAmp = c.createGain();
+      filter = c.createBiquadFilter();
+      filter.type = "lowpass";
+      carrier.type = mod.type = "sine";
+      mod.connect(modGain);
+      mod.connect(modAmp);
+      carrier.connect(ampGain);
+      ampGain.connect(filter);
+      filter.connect(master);
+      modAmp.connect(master);
+      carrier.start();
+      mod.start();
+      wirePreset();
+      built = true;
+    }
+
+    registerAudioBoot(build);
+
+    function applyXY(nx, ny) {
+      if (!built) return;
+      const t = ctx.currentTime;
+      const cf = mapX(nx);
+      const depth = 40 + ny * 420;
+      const idx = 1 + ny * 9;
+      carrier.frequency.setTargetAtTime(cf, t, 0.03);
+      mod.frequency.setTargetAtTime(cf * idx, t, 0.03);
+      modGain.gain.setTargetAtTime(depth, t, 0.03);
+      modAmp.gain.setTargetAtTime(preset === 2 ? depth * 0.15 : 0, t, 0.03);
+      filter.frequency.setTargetAtTime(400 + ny * 6000, t, 0.05);
+      const g = holding ? 0.22 + ny * 0.18 : 0;
+      ampGain.gain.setTargetAtTime(g, t, 0.04);
+      dot.style.left = `${nx * 100}%`;
+      dot.style.top = `${ny * 100}%`;
+      hud.textContent = `${PRESETS[preset]} · ${cf.toFixed(0)} Hz · depth ${ny.toFixed(2)}`;
+    }
+
+    function release() {
+      holding = false;
+      if (built) ampGain.gain.setTargetAtTime(0, ctx.currentTime, 0.08);
+    }
+
+    stage.addEventListener("pointerdown", async (e) => {
+      e.preventDefault();
+      await startAudio(build);
+      holding = true;
+      pid = e.pointerId;
+      stage.setPointerCapture(e.pointerId);
+      const { nx, ny } = pointerNorm(stage, e);
+      applyXY(nx, ny);
+    });
+    stage.addEventListener("pointermove", (e) => {
+      if (!holding || e.pointerId !== pid) return;
+      const { nx, ny } = pointerNorm(stage, e);
+      applyXY(nx, ny);
+    });
+    const up = (e) => {
+      if (e.pointerId !== pid) return;
+      release();
+      try { stage.releasePointerCapture(pid); } catch { /* noop */ }
+    };
+    stage.addEventListener("pointerup", up);
+    stage.addEventListener("pointercancel", up);
+
+    window.addEventListener("keydown", (e) => {
+      const n = parseInt(e.key, 10);
+      if (n >= 1 && n <= 4) {
+        preset = n - 1;
+        if (built) wirePreset();
+        hud.textContent = `${PRESETS[preset]} selected`;
+      }
+    });
+  </script>
+</body>
+</html>

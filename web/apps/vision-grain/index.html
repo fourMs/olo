@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#080a0e" />
+  <title>Vision Grain — OLO</title>
+  <link rel="stylesheet" href="../../shared/ui.css" />
+</head>
+<body class="app-shell">
+  <header class="app-header">
+    <a class="back-link" href="../../">←</a>
+    <h1>Vision Grain</h1>
+  </header>
+  <div class="learn-panel panel" id="learnPanel">
+    <h2>Camera → granular cloud</h2>
+    <p>Turn <strong>Audio on</strong> and allow the <strong>camera</strong>. Motion in the frame spawns short grains; still image = quiet.</p>
+    <p><strong>A / S</strong> grain size · <strong>D / F</strong> pitch spread. Full-screen feedback video. Inspired by OMO Video Sonifier and Motion Grid.</p>
+  </div>
+  <p class="status-bar hud-bar" id="hud">Audio + camera to start</p>
+  <div class="stage-full stage-vision">
+    <video id="vid" playsinline muted autoplay></video>
+    <canvas id="viz"></canvas>
+  </div>
+  <script type="module">
+    import { bindLearn, registerAudioBoot, startAudio } from "../../shared/app.js";
+    import { createMasterBus, midiToFreq } from "../../shared/audio.js";
+
+    bindLearn();
+
+    const vid = document.getElementById("vid");
+    const viz = document.getElementById("viz");
+    const vg = viz.getContext("2d");
+    const hud = document.getElementById("hud");
+
+    let ctx, master, built = false;
+    let grainMs = 90;
+    let spread = 0.35;
+    let prev = null;
+    let lastGrain = 0;
+    const PENTA = [60, 62, 64, 67, 69, 72, 74, 76];
+
+    function spawnGrain(motion) {
+      if (!ctx || motion < 0.012) return;
+      const now = performance.now();
+      if (now - lastGrain < 40) return;
+      lastGrain = now;
+      const t0 = ctx.currentTime;
+      const len = Math.max(0.02, grainMs / 1000);
+      const n = Math.floor(ctx.sampleRate * len);
+      const buf = ctx.createBuffer(1, n, ctx.sampleRate);
+      const d = buf.getChannelData(0);
+      for (let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / n);
+      const src = ctx.createBufferSource();
+      src.buffer = buf;
+      const f = ctx.createBiquadFilter();
+      f.type = "bandpass";
+      const midi = PENTA[Math.floor(Math.random() * PENTA.length)] + (Math.random() - 0.5) * spread * 12;
+      f.frequency.value = midiToFreq(midi);
+      f.Q.value = 8;
+      const e = ctx.createGain();
+      const amp = Math.min(0.35, motion * 1.2);
+      e.gain.setValueAtTime(amp, t0);
+      e.gain.exponentialRampToValueAtTime(0.001, t0 + len);
+      src.connect(f);
+      f.connect(e);
+      e.connect(master);
+      src.start(t0);
+      src.stop(t0 + len + 0.02);
+    }
+
+    function motionStep() {
+      if (!built) return;
+      const w = viz.width;
+      const h = viz.height;
+      vg.drawImage(vid, 0, 0, w, h);
+      const frame = vg.getImageData(0, 0, w, h, { willReadFrequently: true });
+      let diff = 0;
+      if (prev && prev.length === frame.data.length) {
+        for (let i = 0; i < frame.data.length; i += 16) {
+          diff += Math.abs(frame.data[i] - prev[i]);
+        }
+        diff /= frame.data.length / 16 * 255;
+        spawnGrain(diff);
+      }
+      prev = frame.data;
+      requestAnimationFrame(motionStep);
+    }
+
+    async function build(c) {
+      ctx = c;
+      ({ master } = createMasterBus(c, 0.5));
+      if (!navigator.mediaDevices?.getUserMedia) {
+        hud.textContent = "Camera not available";
+        return;
+      }
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: "user", width: { ideal: 320 }, height: { ideal: 240 } },
+        audio: false,
+      });
+      vid.srcObject = stream;
+      await vid.play();
+      const box = viz.parentElement.getBoundingClientRect();
+      const dpr = devicePixelRatio || 1;
+      viz.width = Math.floor(box.width * dpr);
+      viz.height = Math.floor(box.height * dpr);
+      built = true;
+      hud.textContent = "Move in frame to trigger grains";
+      motionStep();
+    }
+
+    registerAudioBoot(build);
+
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "a") grainMs = Math.max(30, grainMs - 15);
+      if (e.key === "s") grainMs = Math.min(200, grainMs + 15);
+      if (e.key === "d") spread = Math.max(0.1, spread - 0.05);
+      if (e.key === "f") spread = Math.min(1, spread + 0.05);
+      if ("asdf".includes(e.key)) hud.textContent = `grain ${grainMs} ms · spread ${spread.toFixed(2)}`;
+    });
+
+    document.body.addEventListener(
+      "pointerdown",
+      () => void startAudio(build),
+      { once: true }
+    );
+  </script>
+</body>
+</html>

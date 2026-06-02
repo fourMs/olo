@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Filter Ladder — OLO</title>
+  <link rel="stylesheet" href="../../shared/ui.css" />
+</head>
+<body class="app-shell">
+  <header class="app-header">
+    <a class="back-link" href="../../">←</a>
+    <h1>Filter Ladder</h1>
+  </header>
+  <div class="learn-panel panel" id="learnPanel">
+    <h2>4-pole ladder — tilt or mouse</h2>
+    <p><strong>Space</strong> gate on. Vertical position (tilt or mouse Y) opens the lowpass ladder. <strong>← →</strong> resonance · <strong>↑ ↓</strong> oscillator detune.</p>
+    <p>Keys <strong>1–8</strong> set root MIDI note. OMO Filter Ladder for laptop.</p>
+  </div>
+  <p class="status-bar hud-bar" id="hud">Space = play</p>
+  <div class="stage-full" id="stage"></div>
+  <script type="module">
+    import { bindLearn, registerAudioBoot, startAudio } from "../../shared/app.js";
+    import { createMasterBus, midiToFreq } from "../../shared/audio.js";
+    import { bindVerticalControl } from "../../shared/laptop-sensors.js";
+
+    bindLearn();
+    const stage = document.getElementById("stage");
+    let ctx, on = false, midi = 48, res = 8, det = 0;
+    let osc, filt, env, master;
+
+    function build(c) {
+      ctx = c;
+      ({ master } = createMasterBus(c, 0.55));
+      osc = c.createOscillator();
+      osc.type = "sawtooth";
+      filt = c.createBiquadFilter();
+      filt.type = "lowpass";
+      filt.Q.value = res;
+      env = c.createGain();
+      env.gain.value = 0;
+      osc.connect(filt);
+      filt.connect(env);
+      env.connect(master);
+      osc.start();
+      bindVerticalControl(stage, (ny) => {
+        if (!on) return;
+        const t = ctx.currentTime;
+        filt.frequency.setTargetAtTime(80 + (1 - ny) ** 1.4 * 12000, t, 0.04);
+        env.gain.setTargetAtTime(0.08 + ny * 0.2, t, 0.03);
+      });
+    }
+    registerAudioBoot(build);
+
+    function setPitch() {
+      if (!ctx) return;
+      osc.frequency.setTargetAtTime(midiToFreq(midi) * (1 + det * 0.02), ctx.currentTime, 0.05);
+    }
+
+    async function toggle() {
+      await startAudio(build);
+      on = !on;
+      const t = ctx.currentTime;
+      env.gain.setTargetAtTime(on ? 0.35 : 0, t, 0.08);
+      document.getElementById("hud").textContent = on ? `midi ${midi} · Q ${res.toFixed(1)}` : "Space = play";
+      setPitch();
+    }
+
+    window.addEventListener("keydown", (e) => {
+      if (e.code === "Space") {
+        e.preventDefault();
+        void toggle();
+        return;
+      }
+      if (!on) return;
+      if (e.key === "ArrowLeft") {
+        res = Math.max(0.5, res - 0.5);
+        filt.Q.value = res;
+      }
+      if (e.key === "ArrowRight") {
+        res = Math.min(24, res + 0.5);
+        filt.Q.value = res;
+      }
+      if (e.key === "ArrowUp") det = Math.min(6, det + 1);
+      if (e.key === "ArrowDown") det = Math.max(-6, det - 1);
+      const d = parseInt(e.key, 10);
+      if (d >= 1 && d <= 8) midi = 36 + (d - 1) * 2;
+      setPitch();
+    });
+  </script>
+</body>
+</html>

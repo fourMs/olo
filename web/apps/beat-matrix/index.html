@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Beat Matrix — OLO</title>
+  <link rel="stylesheet" href="../../shared/ui.css" />
+</head>
+<body class="app-shell seq-app">
+  <header class="app-header">
+    <a class="back-link" href="../../">←</a>
+    <h1>Beat Matrix</h1>
+  </header>
+  <div class="learn-panel panel" id="learnPanel">
+    <h2>Keyboard step matrix</h2>
+    <p><strong>Space</strong> play · Row keys toggle steps while playing:</p>
+    <p><code>Q W E R T Y U I</code> kick · <code>A S D F G H J K</code> snare · <code>Z X C V B N M ,</code> hat · <code>1 2 3 4 5 6 7 8</code> tom</p>
+    <p>Click cells to edit. Full-width 16-step grid for laptop performance.</p>
+  </div>
+  <div class="seq-toolbar">
+    <label for="bpm">BPM</label>
+    <input type="range" id="bpm" min="70" max="160" value="110" />
+    <span id="bpmVal">110</span>
+    <button type="button" class="btn btn-play" id="playBtn">▶</button>
+  </div>
+  <div class="stage-full stage-matrix" id="grid"></div>
+  <script type="module">
+    import { bindLearn, registerAudioBoot, startAudio } from "../../shared/app.js";
+    import { createMasterBus } from "../../shared/audio.js";
+    import { DRUM_SEQ_ROWS } from "../../shared/drum-sounds.js";
+
+    bindLearn();
+    const STEPS = 16;
+    const KEY_MAP = new Map();
+    "qwertyui".split("").forEach((k, i) => KEY_MAP.set(k.charCodeAt(0), [0, i]));
+    "asdfghjk".split("").forEach((k, i) => KEY_MAP.set(k.charCodeAt(0), [1, i]));
+    "zxcvbnm,".split("").forEach((k, i) => KEY_MAP.set(k.charCodeAt(0), [2, i]));
+    "12345678".split("").forEach((k, i) => KEY_MAP.set(k.charCodeAt(0), [3, i]));
+
+    const pattern = DRUM_SEQ_ROWS.map(() => Array(STEPS).fill(false));
+    pattern[0][0] = pattern[0][8] = pattern[1][4] = pattern[2][2] = pattern[2][6] = pattern[2][10] = pattern[2][14] = true;
+
+    const grid = document.getElementById("grid");
+    let ctx, master, built = false, playing = false, step = 0, nextTime = 0;
+
+    DRUM_SEQ_ROWS.forEach((row, ri) => {
+      const label = document.createElement("div");
+      label.className = "matrix-label";
+      label.textContent = `${row.icon} ${row.name}`;
+      grid.appendChild(label);
+      for (let ci = 0; ci < STEPS; ci++) {
+        const cell = document.createElement("button");
+        cell.type = "button";
+        cell.className = "matrix-cell";
+        cell.dataset.r = String(ri);
+        cell.dataset.c = String(ci);
+        cell.onclick = () => {
+          pattern[ri][ci] = !pattern[ri][ci];
+          redraw();
+          if (built && pattern[ri][ci]) DRUM_SEQ_ROWS[ri].play(ctx, master);
+        };
+        grid.appendChild(cell);
+      }
+    });
+
+    function redraw() {
+      grid.querySelectorAll(".matrix-cell").forEach((el) => {
+        const ri = +el.dataset.r;
+        const ci = +el.dataset.c;
+        el.classList.toggle("on", pattern[ri][ci]);
+        el.classList.toggle("play", playing && ci === step);
+      });
+    }
+
+    function boot(c) {
+      ctx = c;
+      ({ master } = createMasterBus(c, 0.7));
+      built = true;
+      redraw();
+    }
+    registerAudioBoot(boot);
+
+    function sched() {
+      if (!playing) return;
+      const now = ctx.currentTime;
+      const base = 60 / +document.getElementById("bpm").value / 4;
+      while (nextTime <= now + 0.05) {
+        for (let ri = 0; ri < DRUM_SEQ_ROWS.length; ri++) {
+          if (pattern[ri][step]) DRUM_SEQ_ROWS[ri].play(ctx, master);
+        }
+        redraw();
+        step = (step + 1) % STEPS;
+        nextTime += base;
+      }
+      requestAnimationFrame(sched);
+    }
+
+    async function togglePlay() {
+      await startAudio(boot);
+      playing = !playing;
+      const btn = document.getElementById("playBtn");
+      if (!playing) {
+        btn.textContent = "▶";
+        redraw();
+        return;
+      }
+      step = 0;
+      nextTime = ctx.currentTime + 0.05;
+      btn.textContent = "■";
+      sched();
+    }
+
+    document.getElementById("playBtn").onclick = () => void togglePlay();
+    document.getElementById("bpm").oninput = (e) => {
+      document.getElementById("bpmVal").textContent = e.target.value;
+    };
+
+    window.addEventListener("keydown", (e) => {
+      if (e.code === "Space") {
+        e.preventDefault();
+        void togglePlay();
+        return;
+      }
+      if (e.repeat) return;
+      const hit = KEY_MAP.get(e.key.length === 1 ? e.key.toLowerCase().charCodeAt(0) : -1);
+      if (!hit) return;
+      const [ri, ci] = hit;
+      pattern[ri][ci] = !pattern[ri][ci];
+      redraw();
+      if (built && pattern[ri][ci]) DRUM_SEQ_ROWS[ri].play(ctx, master);
+    });
+
+    redraw();
+  </script>
+</body>
+</html>

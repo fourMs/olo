@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#080a0e" />
+  <title>Horizon — OLO</title>
+  <link rel="stylesheet" href="../../shared/ui.css" />
+</head>
+<body class="app-shell">
+  <header class="app-header">
+    <a class="back-link" href="../../">←</a>
+    <h1>Horizon</h1>
+  </header>
+  <div class="learn-panel panel" id="learnPanel">
+    <h2>Shepard tone — tilt or glide</h2>
+    <p><strong>Space</strong> starts and stops the tone. <strong>↑ / ↓</strong> or <strong>W / S</strong> set glide direction.</p>
+    <p>Move the pointer vertically on the stage, or <strong>tilt</strong> the laptop (when supported) — endless rising/falling spectrum. OMO Shepard Glide, full screen.</p>
+  </div>
+  <p class="status-bar hud-bar" id="hud">Space = play · tilt or mouse Y = speed</p>
+  <div class="stage-full stage-horizon" id="stage"></div>
+  <script type="module">
+    import { bindLearn, registerAudioBoot, startAudio } from "../../shared/app.js";
+    import { createMasterBus } from "../../shared/audio.js";
+    import { bindVerticalControl } from "../../shared/laptop-sensors.js";
+    import { createShepardTone } from "../../shared/shepard.js";
+
+    bindLearn();
+
+    const stage = document.getElementById("stage");
+    const hud = document.getElementById("hud");
+    let shepard = null;
+    let on = false;
+
+    function build(c) {
+      const { master } = createMasterBus(c, 0.55);
+      shepard = createShepardTone(c, master);
+      bindVerticalControl(stage, (ny) => {
+        if (!on || !shepard) return;
+        shepard.setGlide((0.5 - ny) * 1.1);
+        stage.style.setProperty("--lift", `${(1 - ny) * 100}%`);
+      });
+    }
+
+    registerAudioBoot(build);
+
+    function toggle() {
+      void startAudio(build).then(() => {
+        if (!shepard) return;
+        on = !on;
+        if (on) {
+          shepard.start();
+          hud.textContent = "playing — tilt or drag vertically";
+        } else {
+          shepard.stop();
+          hud.textContent = "stopped — Space to play";
+        }
+      });
+    }
+
+    window.addEventListener("keydown", (e) => {
+      if (e.code === "Space") {
+        e.preventDefault();
+        toggle();
+        return;
+      }
+      if (!shepard || !on) return;
+      if (e.key === "ArrowUp" || e.key === "w") shepard.setDirection(1);
+      if (e.key === "ArrowDown" || e.key === "s") shepard.setDirection(-1);
+    });
+
+    stage.addEventListener("click", () => toggle());
+  </script>
+</body>
+</html>

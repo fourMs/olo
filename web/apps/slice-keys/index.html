@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#080a0e" />
+  <title>Slice Keys — OLO</title>
+  <link rel="stylesheet" href="../../shared/ui.css" />
+</head>
+<body class="app-shell">
+  <header class="app-header">
+    <a class="back-link" href="../../">←</a>
+    <h1>Slice Keys</h1>
+  </header>
+  <div class="learn-panel panel" id="learnPanel">
+    <h2>Mic sampler — keyboard slices</h2>
+    <p><strong>R</strong> records ~3 seconds from the mic. Keys <strong>1–8</strong> play slices across the buffer (different offsets and speeds).</p>
+    <p>While holding a number key, move the pointer horizontally on the stage to <strong>scrub</strong>. OMO Sampler / Scrub Tape for laptop keyboard + mouse.</p>
+  </div>
+  <p class="status-bar hud-bar" id="hud">Press R to record</p>
+  <div class="stage-full stage-slices" id="stage">
+    <canvas id="wave"></canvas>
+  </div>
+  <script type="module">
+    import { bindLearn, registerAudioBoot, setStatus, startAudio } from "../../shared/app.js";
+    import { createMasterBus, getMicStream } from "../../shared/audio.js";
+    import { clamp, pointerNorm } from "../../shared/laptop-sensors.js";
+
+    bindLearn();
+
+    const stage = document.getElementById("stage");
+    const canvas = document.getElementById("wave");
+    const g = canvas.getContext("2d");
+    const hud = document.getElementById("hud");
+
+    const SLICES = 8;
+    const REC_SEC = 3;
+
+    let ctx, master, buffer = null;
+    let recording = false;
+    const held = new Set();
+
+    function resize() {
+      const r = stage.getBoundingClientRect();
+      const dpr = devicePixelRatio || 1;
+      canvas.width = Math.floor(r.width * dpr);
+      canvas.height = Math.floor(r.height * dpr);
+      drawWave();
+    }
+
+    function drawWave() {
+      const w = canvas.width;
+      const h = canvas.height;
+      g.fillStyle = "#080a0e";
+      g.fillRect(0, 0, w, h);
+      if (!buffer) return;
+      const data = buffer.getChannelData(0);
+      g.strokeStyle = "rgba(125, 211, 252, 0.85)";
+      g.lineWidth = 2;
+      g.beginPath();
+      const step = Math.max(1, Math.floor(data.length / w));
+      for (let x = 0; x < w; x++) {
+        const i = x * step;
+        const y = (0.5 - data[i] * 0.45) * h;
+        if (x === 0) g.moveTo(x, y);
+        else g.lineTo(x, y);
+      }
+      g.stroke();
+      for (let s = 0; s < SLICES; s++) {
+        const x = ((s + 0.5) / SLICES) * w;
+        g.strokeStyle = "rgba(251, 146, 60, 0.35)";
+        g.beginPath();
+        g.moveTo(x, 0);
+        g.lineTo(x, h);
+        g.stroke();
+      }
+    }
+
+    async function record() {
+      if (!ctx || recording) return;
+      recording = true;
+      hud.textContent = "Recording…";
+      const stream = await getMicStream();
+      const rec = ctx.createMediaStreamSource(stream);
+      const len = Math.ceil(ctx.sampleRate * REC_SEC);
+      const buf = ctx.createBuffer(1, len, ctx.sampleRate);
+      const proc = ctx.createScriptProcessor(4096, 1, 1);
+      let off = 0;
+      const ch = buf.getChannelData(0);
+      proc.onaudioprocess = (e) => {
+        const inp = e.inputBuffer.getChannelData(0);
+        for (let i = 0; i < inp.length && off < len; i++) ch[off++] = inp[i];
+        if (off >= len) {
+          proc.disconnect();
+          rec.disconnect();
+          buffer = buf;
+          recording = false;
+          hud.textContent = "Ready — keys 1–8";
+          drawWave();
+        }
+      };
+      rec.connect(proc);
+      const silent = ctx.createGain();
+      silent.gain.value = 0;
+      proc.connect(silent);
+      silent.connect(ctx.destination);
+    }
+
+    function playSlice(idx, scrubNx = null) {
+      if (!buffer || !ctx) return;
+      const t0 = ctx.currentTime;
+      const sliceLen = buffer.duration / SLICES;
+      let start = idx * sliceLen;
+      if (scrubNx != null) start = scrubNx * Math.max(0, buffer.duration - sliceLen * 0.5);
+      const rate = 0.85 + (idx % 4) * 0.08;
+      const src = ctx.createBufferSource();
+      src.buffer = buffer;
+      src.playbackRate.value = rate;
+      const env = ctx.createGain();
+      env.gain.setValueAtTime(0.001, t0);
+      env.gain.exponentialRampToValueAtTime(0.55, t0 + 0.008);
+      env.gain.exponentialRampToValueAtTime(0.001, t0 + sliceLen / rate);
+      src.connect(env);
+      env.connect(master);
+      src.start(t0, start, sliceLen / rate);
+    }
+
+    function build(c) {
+      ctx = c;
+      ({ master } = createMasterBus(c, 0.75));
+      resize();
+    }
+
+    registerAudioBoot(build, { mic: true });
+
+    window.addEventListener("keydown", async (e) => {
+      if (e.repeat) return;
+      if (e.key === "r" || e.key === "R") {
+        e.preventDefault();
+        await startAudio(build);
+        void record();
+        return;
+      }
+      const d = parseInt(e.key, 10);
+      if (d >= 1 && d <= 8) {
+        e.preventDefault();
+        await startAudio(build);
+        held.add(d);
+        playSlice(d - 1);
+      }
+    });
+    window.addEventListener("keyup", (e) => {
+      const d = parseInt(e.key, 10);
+      if (d >= 1 && d <= 8) held.delete(d);
+    });
+
+    let lastScrub = 0;
+    stage.addEventListener("pointermove", (e) => {
+      if (!held.size || !buffer) return;
+      const now = performance.now();
+      if (now - lastScrub < 60) return;
+      lastScrub = now;
+      const { nx } = pointerNorm(stage, e);
+      for (const d of held) playSlice(d - 1, nx);
+    });
+
+    window.addEventListener("resize", resize);
+    resize();
+  </script>
+</body>
+</html>

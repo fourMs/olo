@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Wavetable Scan — OLO</title>
+  <link rel="stylesheet" href="../../shared/ui.css" />
+</head>
+<body class="app-shell">
+  <header class="app-header">
+    <a class="back-link" href="../../">←</a>
+    <h1>Wavetable Scan</h1>
+  </header>
+  <div class="learn-panel panel" id="learnPanel">
+    <h2>Morph waves on a full pad</h2>
+    <p>Hold the stage: <strong>X</strong> scans wavetable (sine → triangle → saw → square), <strong>Y</strong> = pitch and brightness.</p>
+    <p>Keys <strong>1–6</strong> jump to table presets. OMO Wavetable Scan for laptop mouse.</p>
+  </div>
+  <p class="status-bar hud-bar" id="hud">Hold pad to play</p>
+  <div class="stage-full" id="stage"><div class="stage-reticle" id="dot"></div></div>
+  <script type="module">
+    import { bindLearn, registerAudioBoot, startAudio } from "../../shared/app.js";
+    import { createMasterBus, midiToFreq } from "../../shared/audio.js";
+    import { pointerNorm } from "../../shared/laptop-sensors.js";
+
+    bindLearn();
+    const stage = document.getElementById("stage");
+    const dot = document.getElementById("dot");
+    const tables = [];
+    let ctx, osc, gain, master, holding = false, pid = null;
+
+    function makeTable(c, fn) {
+      const n = 64;
+      const real = new Float32Array(n + 1);
+      const imag = new Float32Array(n + 1);
+      for (let i = 1; i <= n; i++) {
+        real[i] = fn(i, n);
+      }
+      return c.createPeriodicWave(real, imag);
+    }
+
+    function build(c) {
+      ctx = c;
+      ({ master } = createMasterBus(c, 0.5));
+      tables.push(
+        makeTable(c, (i) => (i === 1 ? 1 : 0)),
+        makeTable(c, (i) => (i % 2 ? 0 : 1 / i)),
+        makeTable(c, (i) => (i % 2 ? 1 / i : 0)),
+        makeTable(c, (i) => 1 / i),
+        makeTable(c, (i) => (Math.sin(i) > 0 ? 1 / i : 0)),
+        makeTable(c, (i) => (i < 8 ? 1 / i : 0))
+      );
+      osc = c.createOscillator();
+      osc.setPeriodicWave(tables[0]);
+      gain = c.createGain();
+      gain.gain.value = 0;
+      osc.connect(gain);
+      gain.connect(master);
+      osc.start();
+    }
+    registerAudioBoot(build);
+
+    function apply(nx, ny) {
+      if (!ctx) return;
+      const t = ctx.currentTime;
+      const ti = Math.min(tables.length - 1, Math.floor(nx * tables.length));
+      osc.setPeriodicWave(tables[ti]);
+      osc.frequency.setTargetAtTime(midiToFreq(36 + ny * 48), t, 0.03);
+      gain.gain.setTargetAtTime(holding ? 0.12 + ny * 0.25 : 0, t, 0.04);
+      dot.style.left = `${nx * 100}%`;
+      dot.style.top = `${ny * 100}%`;
+      document.getElementById("hud").textContent = `table ${ti + 1}/${tables.length}`;
+    }
+
+    stage.addEventListener("pointerdown", async (e) => {
+      e.preventDefault();
+      await startAudio(build);
+      holding = true;
+      pid = e.pointerId;
+      stage.setPointerCapture(e.pointerId);
+      const { nx, ny } = pointerNorm(stage, e);
+      apply(nx, ny);
+    });
+    stage.addEventListener("pointermove", (e) => {
+      if (!holding || e.pointerId !== pid) return;
+      const { nx, ny } = pointerNorm(stage, e);
+      apply(nx, ny);
+    });
+    const up = () => {
+      holding = false;
+      if (ctx) gain.gain.setTargetAtTime(0, ctx.currentTime, 0.06);
+    };
+    stage.addEventListener("pointerup", up);
+    stage.addEventListener("pointercancel", up);
+
+    window.addEventListener("keydown", async (e) => {
+      const d = parseInt(e.key, 10);
+      if (d >= 1 && d <= 6) {
+        await startAudio(build);
+        apply((d - 1) / 5, 0.5);
+      }
+    });
+  </script>
+</body>
+</html>

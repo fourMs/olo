@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mic Theremin — OLO</title>
+  <link rel="stylesheet" href="../../shared/ui.css" />
+</head>
+<body class="app-shell">
+  <header class="app-header">
+    <a class="back-link" href="../../">←</a>
+    <h1>Mic Theremin</h1>
+  </header>
+  <div class="learn-panel panel" id="learnPanel">
+    <h2>Mic → pitch</h2>
+    <p>Hum or sing into the laptop mic; a sine follows the loudest pitch (autocorrelation). <strong>Mouse X</strong> = vibrato depth · <strong>Y</strong> = volume.</p>
+    <p>OMO Mic Theremin — full-screen level meter.</p>
+  </div>
+  <p class="status-bar hud-bar" id="hud">Audio + mic</p>
+  <div class="stage-full stage-theremin" id="stage">
+    <div class="theremin-meter"><span id="meter"></span></div>
+    <p class="theremin-freq" id="freq">— Hz</p>
+  </div>
+  <script type="module">
+    import { bindLearn, registerAudioBoot, startAudio } from "../../shared/app.js";
+    import { connectMicAnalyser, createMasterBus, getMicStream } from "../../shared/audio.js";
+    import { pointerNorm } from "../../shared/laptop-sensors.js";
+
+    bindLearn();
+    const stage = document.getElementById("stage");
+    const hud = document.getElementById("hud");
+    let ctx, osc, gain, master, analyser, buf;
+    let mx = 0.5,
+      my = 0.5;
+
+    async function build(c) {
+      ctx = c;
+      ({ master } = createMasterBus(c, 0.5));
+      const stream = await getMicStream();
+      analyser = c.createAnalyser();
+      analyser.fftSize = 2048;
+      connectMicAnalyser(c, stream, analyser, { inputGain: 2 });
+      buf = new Float32Array(analyser.fftSize);
+      osc = c.createOscillator();
+      osc.type = "sine";
+      gain = c.createGain();
+      gain.gain.value = 0;
+      const vib = c.createOscillator();
+      vib.frequency.value = 5;
+      const vibGain = c.createGain();
+      vibGain.gain.value = 0;
+      vib.connect(vibGain);
+      vibGain.connect(osc.frequency);
+      osc.connect(gain);
+      gain.connect(master);
+      osc.start();
+      vib.start();
+      const loop = () => {
+        analyser.getFloatTimeDomainData(buf);
+        let bestLag = 0;
+        let best = 0;
+        const minLag = Math.floor(ctx.sampleRate / 900);
+        const maxLag = Math.floor(ctx.sampleRate / 70);
+        for (let lag = minLag; lag < maxLag; lag++) {
+          let sum = 0;
+          for (let i = 0; i < buf.length - lag; i++) sum += buf[i] * buf[i + lag];
+          if (sum > best) {
+            best = sum;
+            bestLag = lag;
+          }
+        }
+        let rms = 0;
+        for (let i = 0; i < buf.length; i++) rms += buf[i] * buf[i];
+        rms = Math.sqrt(rms / buf.length);
+        const t = ctx.currentTime;
+        if (bestLag > 0 && rms > 0.01) {
+          const hz = ctx.sampleRate / bestLag;
+          osc.frequency.setTargetAtTime(hz, t, 0.03);
+          vibGain.gain.setTargetAtTime(mx * 40, t, 0.05);
+          gain.gain.setTargetAtTime(Math.min(0.45, rms * 3 * (1 - my * 0.5)), t, 0.03);
+          document.getElementById("freq").textContent = `${hz.toFixed(1)} Hz`;
+        } else {
+          gain.gain.setTargetAtTime(0, t, 0.05);
+        }
+        document.getElementById("meter").style.width = `${Math.min(100, rms * 400)}%`;
+        requestAnimationFrame(loop);
+      };
+      loop();
+      hud.textContent = "Listening…";
+    }
+    registerAudioBoot(build, { mic: true });
+    stage.addEventListener("pointermove", (e) => {
+      ({ nx: mx, ny: my } = pointerNorm(stage, e));
+    });
+    document.body.addEventListener("pointerdown", () => void startAudio(build), { once: true });
+  </script>
+</body>
+</html>
