@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#080a0e" />
+  <title>Clap Hands — OLO</title>
+  <link rel="stylesheet" href="../../shared/ui.css" />
+  <style>
+    .clap-stage { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; padding: 1rem; }
+    .clap-meter {
+      width: min(24rem, 90%); height: 0.5rem; border-radius: 4px; background: #1a1f2a; overflow: hidden;
+    }
+    .clap-meter span { display: block; height: 100%; width: 0%; background: var(--accent-warm); transition: width 0.05s; }
+    .clap-sliders { display: grid; grid-template-columns: 6rem 1fr 3rem; gap: 0.35rem 0.75rem; align-items: center; font-size: 0.8rem; max-width: 24rem; width: 100%; }
+  </style>
+</head>
+<body class="app-shell">
+  <header class="app-header">
+    <a class="back-link" href="../../">←</a>
+    <h1>Clap Hands</h1>
+  </header>
+  <div class="learn-panel panel" id="learnPanel">
+    <h2>Clap Hands (Alexander Refsum Jensenius, 2008)</h2>
+    <p>Turn <strong>Audio on</strong> and allow the microphone. Clap, snap, or speak — transients feed a cascade of stereo delays (inspired by the Max <code>clap-hands</code> patch).</p>
+    <p>Adjust feedback and delay time. Works best with laptop speakers at moderate volume to avoid feedback.</p>
+  </div>
+  <p class="status-bar" id="status">Mic off — turn Audio on</p>
+  <div class="clap-stage">
+    <div class="clap-meter" aria-hidden="true"><span id="meter"></span></div>
+    <div class="clap-sliders">
+      <label for="delayMs">Delay</label>
+      <input type="range" id="delayMs" min="80" max="600" value="220" />
+      <span id="delayVal">220 ms</span>
+      <label for="feedback">Feedback</label>
+      <input type="range" id="feedback" min="0" max="92" value="58" />
+      <span id="fbVal">58%</span>
+      <label for="sens">Sensitivity</label>
+      <input type="range" id="sens" min="1" max="100" value="42" />
+      <span id="sensVal">42</span>
+    </div>
+  </div>
+  <script type="module">
+    import { bindLearn, registerAudioBoot, setStatus, startAudio } from "../../shared/app.js";
+    import { connectMicAnalyser, createMasterBus, getMicStream } from "../../shared/audio.js";
+
+    bindLearn();
+
+    const meter = document.getElementById("meter");
+    const delayMs = document.getElementById("delayMs");
+    const feedback = document.getElementById("feedback");
+    const sens = document.getElementById("sens");
+
+    let ctx, built = false;
+    let analyser, delayNode, fbGain, wetGain, lastTrig = 0;
+
+    async function build(c) {
+      ctx = c;
+      const { master } = createMasterBus(c, 0.7);
+      const stream = await getMicStream();
+      analyser = c.createAnalyser();
+      analyser.fftSize = 512;
+      connectMicAnalyser(c, stream, analyser, { inputGain: 2.2 });
+
+      delayNode = c.createDelay(2);
+      fbGain = c.createGain();
+      wetGain = c.createGain();
+      wetGain.gain.value = 0.85;
+      const dry = c.createGain();
+      dry.gain.value = 0.35;
+
+      const merge = c.createGain();
+      analyser.connect(merge);
+      analyser.connect(dry);
+      dry.connect(master);
+
+      delayNode.delayTime.value = delayMs.value / 1000;
+      fbGain.gain.value = feedback.value / 100;
+      merge.connect(delayNode);
+      delayNode.connect(fbGain);
+      fbGain.connect(delayNode);
+      delayNode.connect(wetGain);
+      wetGain.connect(master);
+
+      const buf = new Uint8Array(analyser.fftSize);
+      const loop = () => {
+        if (!ctx) return;
+        analyser.getByteTimeDomainData(buf);
+        let peak = 0;
+        for (let i = 0; i < buf.length; i++) {
+          const v = Math.abs(buf[i] - 128) / 128;
+          if (v > peak) peak = v;
+        }
+        meter.style.width = `${Math.min(100, peak * 120)}%`;
+        const thr = sens.value / 400;
+        const now = performance.now();
+        if (peak > thr && now - lastTrig > 90) {
+          lastTrig = now;
+          const t = ctx.currentTime;
+          const burst = ctx.createGain();
+          burst.gain.setValueAtTime(peak * 1.2, t);
+          burst.gain.exponentialRampToValueAtTime(0.001, t + 0.08);
+          analyser.connect(burst);
+          burst.connect(delayNode);
+          burst.connect(wetGain);
+          setTimeout(() => {
+            try { burst.disconnect(); } catch { /* noop */ }
+          }, 150);
+        }
+        requestAnimationFrame(loop);
+      };
+      loop();
+      built = true;
+      setStatus("status", "Listening — clap or speak", "ok");
+    }
+
+    registerAudioBoot(build, { mic: true });
+
+    delayMs.oninput = () => {
+      document.getElementById("delayVal").textContent = `${delayMs.value} ms`;
+      if (delayNode) delayNode.delayTime.value = delayMs.value / 1000;
+    };
+    feedback.oninput = () => {
+      document.getElementById("fbVal").textContent = `${feedback.value}%`;
+      if (fbGain) fbGain.gain.value = feedback.value / 100;
+    };
+    sens.oninput = () => {
+      document.getElementById("sensVal").textContent = sens.value;
+    };
+
+    document.body.addEventListener("pointerdown", () => void startAudio(build), { once: true });
+  </script>
+</body>
+</html>

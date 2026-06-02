@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#080a0e" />
+  <title>CliX — OLO</title>
+  <link rel="stylesheet" href="../../shared/ui.css" />
+  <style>
+    .clix-grid-wrap { flex: 1; min-height: 8rem; display: flex; align-items: center; padding: 0.5rem; }
+    .clix-grid {
+      display: grid; grid-template-columns: repeat(8, 1fr); gap: 4px; width: 100%; max-width: 36rem; margin: 0 auto;
+    }
+    .clix-cell {
+      aspect-ratio: 1.15; min-height: 1.5rem; border-radius: 5px;
+      background: var(--surface); border: 1px solid rgba(255,255,255,0.1);
+    }
+    .clix-cell.on { background: var(--accent-warm); box-shadow: 0 0 12px rgba(251,146,60,0.5); }
+    .clix-live { text-align: center; font-size: 0.75rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+    .clix-keyboard { padding: 0.35rem; }
+    .clix-row { display: flex; flex-wrap: wrap; gap: 5px; justify-content: center; margin-bottom: 5px; }
+    .clix-key {
+      min-width: 2rem; min-height: 2.4rem; font: 600 0.85rem/1 system-ui, sans-serif;
+      border-radius: 6px; border: 1px solid rgba(255,255,255,0.14); background: #252b38; color: var(--text); cursor: pointer;
+    }
+    .clix-key.down { background: var(--accent-warm); color: #0a0e14; }
+    .clix-host-panel { padding: 0.75rem; font-size: 0.8rem; }
+  </style>
+</head>
+<body class="app-shell clix-app">
+  <header class="app-header">
+    <a class="back-link" href="../../">←</a>
+    <h1>CliX</h1>
+  </header>
+  <div class="learn-panel panel" id="learnPanel">
+    <h2>CliX</h2>
+    <p>Turn <strong>Audio on</strong>. <strong>Hold</strong> keyboard keys (QWERTY or number row) — each orange grid pulse retriggers; pitch = character, loudness = grid cell.</p>
+    <p><strong>Host</strong> shares sync with the ensemble (replaces ChucK <code>server-multi.ck</code>).</p>
+  </div>
+  <div class="role-tabs">
+    <button type="button" id="tabPlay" class="active">Play</button>
+    <button type="button" id="tabHost">Host</button>
+  </div>
+  <div id="playView" class="main-stage">
+    <div class="clix-grid-wrap"><div class="clix-grid" id="grid"></div></div>
+    <p class="clix-live" id="readout">grid — · held 0</p>
+    <div class="clix-keyboard" id="keys"></div>
+    <div class="app-toolbar"><button type="button" class="btn-secondary" id="clearBtn">Clear held</button></div>
+  </div>
+  <div id="hostView" class="main-stage hidden">
+    <div class="clix-host-panel">
+      <p>One host shares timing. Everyone opens the musician link before playing.</p>
+      <div class="scroll-panel hidden" id="sharePanel">
+        <p style="color:var(--muted);margin:0 0 0.35rem">Musician link</p>
+        <div class="link-box" id="musicianLink"></div>
+      </div>
+      <button type="button" class="btn" id="hostStart">Start sync (5s)</button>
+      <button type="button" class="btn-secondary hidden" id="copyBtn">Copy link</button>
+      <p class="status-bar" id="hostStatus"></p>
+    </div>
+  </div>
+  <script type="module" src="clix.js"></script>
+</body>
+</html>

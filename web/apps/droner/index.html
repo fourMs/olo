@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#080a0e" />
+  <title>Droner — OLO</title>
+  <link rel="stylesheet" href="../../shared/ui.css" />
+  <style>
+    .droner-stage {
+      flex: 1; position: relative; margin: 0.5rem;
+      border-radius: 10px; border: 1px solid #2d3548;
+      background: radial-gradient(circle at var(--mx,50%) var(--my,50%), #1e3a5f 0%, #080a0e 65%);
+      cursor: crosshair;
+    }
+    .droner-corner {
+      position: absolute; width: 2.5rem; height: 2.5rem; border-radius: 50%;
+      border: 1px solid rgba(125,211,252,0.35); font-size: 0.65rem;
+      display: flex; align-items: center; justify-content: center; color: var(--muted);
+      pointer-events: none;
+    }
+    .droner-corner.ul { top: 0.5rem; left: 0.5rem; }
+    .droner-corner.ur { top: 0.5rem; right: 0.5rem; }
+    .droner-corner.lr { bottom: 0.5rem; right: 0.5rem; }
+    .droner-corner.ll { bottom: 0.5rem; left: 0.5rem; }
+    .droner-hud { text-align: center; font-size: 0.75rem; color: var(--muted); padding: 0.25rem; }
+  </style>
+</head>
+<body class="app-shell">
+  <header class="app-header">
+    <a class="back-link" href="../../">←</a>
+    <h1>Droner</h1>
+  </header>
+  <div class="learn-panel panel" id="learnPanel">
+    <h2>Droner (Dan Trueman, 2007)</h2>
+    <p>Turn <strong>Audio on</strong>, then <strong>Space</strong> to fade the drone in/out.</p>
+    <p><strong>Keys 1–8</strong> choose the fundamental. Move the pointer on the stage to crossfade four overtone corners (center = equal mix).</p>
+    <p><strong>Vertical</strong> position on the stage controls volume (replaces laptop tilt). <strong>Horizontal</strong> adds slight pitch bend.</p>
+  </div>
+  <p class="status-bar" id="status">Space = fade · 1–8 = pitch · drag stage = mix</p>
+  <div class="droner-stage" id="stage" tabindex="0">
+    <span class="droner-corner ul">UL</span>
+    <span class="droner-corner ur">UR</span>
+    <span class="droner-corner lr">LR</span>
+    <span class="droner-corner ll">LL</span>
+  </div>
+  <p class="droner-hud" id="hud">muted</p>
+  <script type="module">
+    import { bindLearn, registerAudioBoot, setStatus, startAudio } from "../../shared/app.js";
+    import { createMasterBus, midiToFreq } from "../../shared/audio.js";
+
+    bindLearn();
+
+    const NOTES = [28, 29, 31, 33, 35, 36, 38, 40];
+    const GEN_COEFS = [
+      [1, 0, 0, 0, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7],
+      [1, 0, 0.7, 0, 0.7, 0, 0.7, 0, 0.7, 0, 0.7, 0],
+      [0, 0.7, 0, 0.7, 0, 0.7, 0, 0.7, 0, 0.7, 0, 0.7],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0.3, 0.3, 0.7, 0.7, 0.7, 0.7, 0.7],
+    ];
+
+    const stage = document.getElementById("stage");
+    const hud = document.getElementById("hud");
+
+    let ctx, master, built = false;
+    let baseMidi = 36;
+    let mainTarget = 0;
+    let mainGain = 0;
+    let mx = 0.5;
+    let my = 0.5;
+    let cornerTarget = [0.25, 0.25, 0.25, 0.25];
+    let cornerGain = [0.25, 0.25, 0.25, 0.25];
+    const oscs = [];
+
+    function makePeriodicWave(c, coefs) {
+      const n = coefs.length;
+      const real = new Float32Array(n + 1);
+      const imag = new Float32Array(n + 1);
+      for (let i = 0; i < n; i++) {
+        real[i + 1] = coefs[i];
+        imag[i + 1] = 0;
+      }
+      return c.createPeriodicWave(real, imag);
+    }
+
+    function dist(x1, y1, x2, y2) {
+      return Math.hypot(x2 - x1, y2 - y1);
+    }
+
+    function calcCorners(nx, ny) {
+      const x = nx * 2 - 1;
+      const y = ny * 2 - 1;
+      const d = (a, b, cx, cy) => Math.max(0, (2 - dist(a, b, cx, cy)) * 0.5);
+      cornerTarget = [d(x, y, -1, -1), d(x, y, 1, -1), d(x, y, 1, 1), d(x, y, -1, 1)];
+    }
+
+    function build(c) {
+      ctx = c;
+      ({ master } = createMasterBus(c, 0.55));
+      const maingain = c.createGain();
+      maingain.gain.value = 0;
+      maingain.connect(master);
+      const accelgain = c.createGain();
+      accelgain.gain.value = 0;
+      accelgain.connect(maingain);
+
+      for (let i = 0; i < 4; i++) {
+        const o = c.createOscillator();
+        o.setPeriodicWave(makePeriodicWave(c, GEN_COEFS[i]));
+        const g = c.createGain();
+        g.gain.value = 0;
+        o.connect(g);
+        g.connect(accelgain);
+        o.start();
+        oscs.push({ o, g });
+      }
+
+      let freq = midiToFreq(baseMidi);
+      const tick = () => {
+        if (!ctx) return;
+        const t = ctx.currentTime;
+        const spread = freq * 0.05;
+        const tiltX = (mx - 0.5) * 2;
+        const targetFreq = freq + tiltX * spread;
+        freq += (targetFreq - freq) * 0.004;
+        for (const { o } of oscs) o.frequency.setTargetAtTime(freq, t, 0.05);
+
+        const vol = Math.pow(Math.abs(my - 0.5) * 2, 2) * 0.5;
+        accelgain.gain.setTargetAtTime(vol, t, 0.02);
+
+        mainGain += (mainTarget - mainGain) * 0.001;
+        maingain.gain.setTargetAtTime(Math.pow(mainGain, 2) * 0.5, t, 0.02);
+
+        for (let i = 0; i < 4; i++) {
+          cornerGain[i] += (cornerTarget[i] - cornerGain[i]) * 0.001;
+          oscs[i].g.gain.setTargetAtTime(cornerGain[i], t, 0.02);
+        }
+        hud.textContent = `midi ${baseMidi} · fade ${(mainGain * 100) | 0}% · vol ${(vol * 100) | 0}%`;
+        requestAnimationFrame(tick);
+      };
+      tick();
+      built = true;
+    }
+
+    registerAudioBoot(build);
+
+    function pointerNorm(e) {
+      const r = stage.getBoundingClientRect();
+      mx = Math.min(1, Math.max(0, (e.clientX - r.left) / r.width));
+      my = Math.min(1, Math.max(0, (e.clientY - r.top) / r.height));
+      stage.style.setProperty("--mx", `${mx * 100}%`);
+      stage.style.setProperty("--my", `${my * 100}%`);
+      calcCorners(mx, my);
+    }
+
+    stage.addEventListener("pointermove", (e) => { pointerNorm(e); });
+    stage.addEventListener("pointerdown", async (e) => {
+      stage.setPointerCapture(e.pointerId);
+      pointerNorm(e);
+      await startAudio(build);
+    });
+
+    window.addEventListener("keydown", async (e) => {
+      if (e.target.closest("input")) return;
+      if (e.code === "Space") {
+        e.preventDefault();
+        await startAudio(build);
+        mainTarget = mainTarget > 0.5 ? 0 : 1;
+        setStatus("status", mainTarget ? "fading in…" : "fading out…", "ok");
+        return;
+      }
+      const dm = /^Digit([1-8])$/.exec(e.code);
+      if (dm) {
+        e.preventDefault();
+        await startAudio(build);
+        baseMidi = NOTES[parseInt(dm[1], 10) - 1];
+        setStatus("status", `fundamental ${baseMidi}`, "ok");
+      }
+    });
+
+    stage.focus();
+  </script>
+</body>
+</html>

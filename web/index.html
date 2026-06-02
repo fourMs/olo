@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#080a0e" />
+  <title>Oslo Laptop Orchestra — Web Instruments</title>
+  <link rel="stylesheet" href="shared/ui.css" />
+</head>
+<body class="hub">
+  <header class="hub-header">
+    <h1>Oslo Laptop Orchestra</h1>
+    <p>Web Audio instruments for laptop performances</p>
+    <div class="header-controls" id="headerControls">
+      <button type="button" id="learnBtn" class="learn-toggle">About</button>
+    </div>
+  </header>
+
+  <div class="learn-panel panel open" id="learnPanel">
+    <h2>Browser instruments</h2>
+    <p>Each performer opens one instrument in <strong>Chrome</strong> or <strong>Firefox</strong>, turns <strong>Audio on</strong>, and plays through the laptop speakers — no external PA, following OLO’s extended-instrument rule.</p>
+    <p>These apps port classic OLO <strong>ChucK</strong> and <strong>Max/MSP</strong> pieces from <code>patches/</code>, plus laptop-friendly versions of selected <a href="https://github.com/fourMs/omo">OMO</a> mobile instruments.</p>
+    <p><strong>Ensemble sync:</strong> CliX and Crystalis include a <strong>Host</strong> tab — share the musician link so everyone shares the same grid clock (replaces the old ChucK <code>server-multi.ck</code>).</p>
+  </div>
+
+  <p class="hub-intro">
+    Historical patches live in <code>patches/</code>. This <code>web/</code> folder is the modern performance path — keyboard, pointer, and microphone only.
+  </p>
+
+  <ul class="app-list" id="appList"></ul>
+
+  <script type="module">
+    import { bindLearn } from "./shared/app.js";
+    import { HUB_APPS } from "./shared/catalog.js";
+
+    bindLearn("learnBtn");
+
+    const list = document.getElementById("appList");
+    const sorted = [...HUB_APPS].sort((a, b) => a.title.localeCompare(b.title, "en"));
+
+    for (const app of sorted) {
+      const li = document.createElement("li");
+      li.innerHTML = `
+        <a href="${app.href}">
+          <div class="tag">${app.tag}</div>
+          <h2>${app.title}</h2>
+          <p>${app.blurb}</p>
+          <div class="origin">${app.origin}</div>
+        </a>
+      `;
+      list.appendChild(li);
+    }
+  </script>
+</body>
+</html>

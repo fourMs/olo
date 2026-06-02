@@ -16,7 +16,10 @@ These rules can be seen as limitations, but they are also liberating and give th
 
 ## Repository
 
-This repository contains patches and related software used in OLO performances, including pieces and networking tools for [Max/MSP](https://cycling74.com/products/max) and [ChucK](https://chuck.cs.princeton.edu/).
+This repository contains:
+
+- **`web/`** — [Web Audio](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API) instruments for laptop browsers (ports of classic OLO pieces and selected [OMO](https://github.com/fourMs/omo) apps). **Live:** [fourms.github.io/olo](https://fourms.github.io/olo/) · see [web/README.md](web/README.md).
+- **`patches/`** — Historical patches and related software for [Max/MSP](https://cycling74.com/products/max) and [ChucK](https://chuck.cs.princeton.edu/) (2007–2009).
 
 ## Equipment
 

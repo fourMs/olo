@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#080a0e" />
+  <title>Munge — OLO</title>
+  <link rel="stylesheet" href="../../shared/ui.css" />
+  <style>
+    .munge-stage { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1rem; gap: 1rem; }
+    .munge-sliders { display: grid; grid-template-columns: 7rem 1fr 3rem; gap: 0.4rem 0.75rem; max-width: 26rem; width: 100%; font-size: 0.8rem; }
+    .munge-meter { width: min(26rem, 90%); height: 0.45rem; background: #1a1f2a; border-radius: 4px; }
+    .munge-meter span { display: block; height: 100%; width: 0%; background: #f472b6; }
+  </style>
+</head>
+<body class="app-shell">
+  <header class="app-header">
+    <a class="back-link" href="../../">←</a>
+    <h1>Munge</h1>
+  </header>
+  <div class="learn-panel panel" id="learnPanel">
+    <h2>Munging Munger (PLOrk / Dan Trueman lineage)</h2>
+    <p>Live microphone into a filtered delay-with-feedback “munge” (Web Audio approximation of the <code>munger1~</code> granular Max external).</p>
+    <p>Turn <strong>Audio on</strong>, allow the mic, and play — adjust grain size, feedback, and filter.</p>
+  </div>
+  <p class="status-bar" id="status">Mic off</p>
+  <div class="munge-stage">
+    <div class="munge-meter"><span id="meter"></span></div>
+    <div class="munge-sliders">
+      <label for="grain">Grain (ms)</label><input type="range" id="grain" min="20" max="400" value="120" /><span id="grainVal">120</span>
+      <label for="fb">Feedback</label><input type="range" id="fb" min="0" max="95" value="72" /><span id="fbVal">72%</span>
+      <label for="cutoff">Filter</label><input type="range" id="cutoff" min="200" max="8000" value="2400" /><span id="cutVal">2.4k</span>
+    </div>
+    <button type="button" class="btn-secondary" id="freezeBtn">Freeze buffer</button>
+  </div>
+  <script type="module">
+    import { bindLearn, registerAudioBoot, setStatus, startAudio } from "../../shared/app.js";
+    import { connectMicAnalyser, createMasterBus, getMicStream } from "../../shared/audio.js";
+
+    bindLearn();
+
+    let ctx, analyser, delay, fb, filter, wet, frozen = false;
+    let grainMs, fbSlider, cutoff;
+
+    async function build(c) {
+      ctx = c;
+      grainMs = document.getElementById("grain");
+      fbSlider = document.getElementById("fb");
+      cutoff = document.getElementById("cutoff");
+
+      const { master } = createMasterBus(c, 0.65);
+      const stream = await getMicStream();
+      analyser = c.createAnalyser();
+      analyser.fftSize = 2048;
+      connectMicAnalyser(c, stream, analyser, { inputGain: 1.8 });
+
+      delay = c.createDelay(3);
+      fb = c.createGain();
+      filter = c.createBiquadFilter();
+      filter.type = "lowpass";
+      wet = c.createGain();
+      wet.gain.value = 0.9;
+
+      const dry = c.createGain();
+      dry.gain.value = 0.2;
+      analyser.connect(dry);
+      dry.connect(master);
+
+      const tap = c.createGain();
+      analyser.connect(tap);
+      tap.connect(delay);
+      delay.connect(filter);
+      filter.connect(fb);
+      fb.connect(delay);
+      filter.connect(wet);
+      wet.connect(master);
+
+      const sync = () => {
+        delay.delayTime.value = grainMs.value / 1000;
+        fb.gain.value = fbSlider.value / 100;
+        filter.frequency.value = cutoff.value;
+        document.getElementById("grainVal").textContent = grainMs.value;
+        document.getElementById("fbVal").textContent = `${fbSlider.value}%`;
+        document.getElementById("cutVal").textContent =
+          cutoff.value >= 1000 ? `${(cutoff.value / 1000).toFixed(1)}k` : String(cutoff.value);
+      };
+      grainMs.oninput = fbSlider.oninput = cutoff.oninput = sync;
+      sync();
+
+      const meter = document.getElementById("meter");
+      const buf = new Uint8Array(analyser.fftSize);
+      const loop = () => {
+        analyser.getByteTimeDomainData(buf);
+        let p = 0;
+        for (let i = 0; i < buf.length; i++) p = Math.max(p, Math.abs(buf[i] - 128));
+        meter.style.width = `${Math.min(100, (p / 128) * 100)}%`;
+        requestAnimationFrame(loop);
+      };
+      loop();
+
+      document.getElementById("freezeBtn").onclick = () => {
+        frozen = !frozen;
+        fb.gain.setTargetAtTime(frozen ? 0.98 : fbSlider.value / 100, ctx.currentTime, 0.1);
+        document.getElementById("freezeBtn").textContent = frozen ? "Unfreeze" : "Freeze buffer";
+      };
+
+      setStatus("status", "Munging — speak or play into mic", "ok");
+    }
+
+    registerAudioBoot(build, { mic: true });
+    document.body.addEventListener("pointerdown", () => void startAudio(build), { once: true });
+  </script>
+</body>
+</html>
