@@ -526,3 +526,113 @@ body.hub {
   color: var(--accent);
   margin-top: 1rem;
 }
+
+/* Shiny drum machine */
+.shiny-app .shiny-layout {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.35rem;
+  background: #0a0e14;
+}
+
+.shiny-grid-wrap {
+  flex: 1;
+  min-width: 0;
+  position: relative;
+  overflow: auto;
+}
+
+.shiny-grid {
+  display: grid;
+  grid-template-columns: 5.5rem repeat(16, minmax(1.4rem, 1fr));
+  grid-auto-rows: minmax(1.75rem, 1fr);
+  gap: 3px;
+  min-height: 100%;
+  align-content: stretch;
+}
+
+.shiny-label {
+  display: flex;
+  align-items: center;
+  font-size: 0.72rem;
+  color: var(--muted);
+  padding-right: 0.25rem;
+}
+
+.shiny-step {
+  border: 1px solid #2d3548;
+  border-radius: 4px;
+  background: #1a1f2a;
+  cursor: pointer;
+  min-height: 1.4rem;
+  padding: 0;
+}
+
+.shiny-step.soft {
+  background: #4c3d2a;
+  border-color: #a16207;
+}
+
+.shiny-step.loud {
+  background: var(--accent-warm);
+  border-color: #fdba74;
+}
+
+.shiny-step.now {
+  box-shadow: inset 0 0 0 2px var(--accent);
+}
+
+.shiny-playhead {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  margin-left: -1px;
+  background: var(--accent);
+  box-shadow: 0 0 10px var(--accent);
+  pointer-events: none;
+  transition: left 0.04s linear;
+}
+
+.shiny-panel {
+  flex: 0 0 min(14rem, 34vw);
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  padding: 0.55rem;
+  font-size: 0.78rem;
+  overflow-y: auto;
+}
+
+.shiny-row {
+  display: flex;
+  gap: 0.35rem;
+  align-items: center;
+}
+
+.shiny-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  color: var(--muted);
+}
+
+.shiny-field input[type="range"],
+.shiny-field select {
+  width: 100%;
+}
+
+.shiny-pitches {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-top: 0.25rem;
+  padding-top: 0.35rem;
+  border-top: 1px solid #2d3548;
+}
+
+.shiny-pitch input[type="range"] {
+  width: 100%;
+}

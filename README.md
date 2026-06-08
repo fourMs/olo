@@ -27,6 +27,7 @@ We follow the spirit of [PLOrk](https://plork.cs.princeton.edu/) (Princeton Lapt
 | [Vision Grain](https://fourms.github.io/olo/apps/vision-grain/) | Camera motion → granular cloud |
 | [Circular Groove](https://fourms.github.io/olo/apps/circular-groove/) | Euclidean rings + evolving L-system rules |
 | [Beat Matrix](https://fourms.github.io/olo/apps/beat-matrix/) | QWERTY 16×4 step sequencer |
+| [Shiny Machine](https://fourms.github.io/olo/apps/shiny-machine/) | 16-step drums — kits, swing, effects, velocity |
 | [Filter Ladder](https://fourms.github.io/olo/apps/filter-ladder/) | Tilt/mouse opens ladder filter |
 | [Mic Theremin](https://fourms.github.io/olo/apps/mic-theremin/) | Hum → pitch-tracked sine |
 | [Room Wash](https://fourms.github.io/olo/apps/room-wash/) | Mic level → reverb wash |

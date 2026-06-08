@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#080a0e" />
+  <title>Shiny Machine — OLO</title>
+  <link rel="stylesheet" href="../../shared/ui.css" />
+</head>
+<body class="app-shell seq-app shiny-app">
+  <header class="app-header">
+    <a class="back-link" href="../../">←</a>
+    <h1>Shiny Machine</h1>
+  </header>
+  <div class="learn-panel panel" id="learnPanel">
+    <h2>WebAudio drum machine</h2>
+    <p>Inspired by the <a href="https://googlechromelabs.github.io/web-audio-samples/demos/shiny-drum-machine/" target="_blank" rel="noopener">Chrome Labs Shiny Drum Machine</a>. Turn <strong>Audio on</strong>, then <strong>Space</strong> or ▶ to play.</p>
+    <p><strong>Click steps</strong> to cycle: off → soft → loud (three velocity levels). Set <strong>kit</strong>, <strong>effect</strong>, <strong>tempo</strong>, <strong>swing</strong>, and per-drum <strong>pitch</strong>. <strong>Demo</strong> loads a preset groove.</p>
+  </div>
+  <div class="shiny-layout">
+    <div class="shiny-grid-wrap">
+      <div class="shiny-grid" id="grid" aria-label="16-step drum pattern"></div>
+      <div class="shiny-playhead" id="playhead" hidden></div>
+    </div>
+    <aside class="shiny-panel panel">
+      <div class="shiny-row">
+        <button type="button" class="btn btn-play" id="playBtn">▶</button>
+        <button type="button" class="btn-secondary btn-sm" id="demoBtn">Demo</button>
+        <button type="button" class="btn-secondary btn-sm" id="resetBtn">Reset</button>
+      </div>
+      <label class="shiny-field">Kit
+        <select id="kitSel"></select>
+      </label>
+      <label class="shiny-field">Effect
+        <select id="fxSel"></select>
+      </label>
+      <label class="shiny-field">Tempo <span id="bpmVal">100</span> bpm
+        <input type="range" id="bpm" min="50" max="180" step="1" value="100" />
+      </label>
+      <label class="shiny-field">Swing
+        <input type="range" id="swing" min="0" max="100" value="0" />
+      </label>
+      <label class="shiny-field">Effect level
+        <input type="range" id="fxLvl" min="0" max="100" value="25" />
+      </label>
+      <div class="shiny-pitches" id="pitches"></div>
+    </aside>
+  </div>
+  <script type="module">
+    import { bindLearn, registerAudioBoot, startAudio } from "../../shared/app.js";
+    import { createMasterBus } from "../../shared/audio.js";
+    import { SHINY_EFFECTS, createEffectBus } from "../../shared/shiny-effects.js";
+    import {
+      DEMO_PATTERN,
+      SHINY_KITS,
+      SHINY_ROWS,
+      playShinyDrum,
+    } from "../../shared/shiny-drums.js";
+
+    bindLearn();
+
+    const STEPS = 16;
+    const grid = document.getElementById("grid");
+    const playhead = document.getElementById("playhead");
+
+    let ctx, master, conv, effectBus;
+    let built = false;
+    let playing = false;
+    let stepIdx = 0;
+    let nextTime = 0;
+    let schedId = 0;
+
+    const state = {
+      tempo: 100,
+      swing: 0,
+      kitIndex: 0,
+      effectIndex: 0,
+      effectMix: 0.25,
+      pitches: Object.fromEntries(SHINY_ROWS.map((r) => [r.id, 0.5])),
+      pattern: SHINY_ROWS.map(() => Array(STEPS).fill(0)),
+    };
+
+    function buildGrid() {
+      grid.innerHTML = "";
+      for (let ri = 0; ri < SHINY_ROWS.length; ri++) {
+        const label = document.createElement("div");
+        label.className = "shiny-label";
+        label.textContent = `${SHINY_ROWS[ri].icon} ${SHINY_ROWS[ri].name}`;
+        grid.appendChild(label);
+        for (let si = 0; si < STEPS; si++) {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "shiny-step";
+          btn.dataset.r = String(ri);
+          btn.dataset.s = String(si);
+          btn.addEventListener("click", () => void toggleStep(ri, si, true));
+          grid.appendChild(btn);
+        }
+      }
+      redraw();
+    }
+
+    function levelClass(lv) {
+      if (lv === 1) return "soft";
+      if (lv === 2) return "loud";
+      return "";
+    }
+
+    function redraw() {
+      grid.querySelectorAll(".shiny-step").forEach((btn) => {
+        const ri = +btn.dataset.r;
+        const si = +btn.dataset.s;
+        const lv = state.pattern[ri][si];
+        btn.className = `shiny-step ${levelClass(lv)}`;
+        btn.setAttribute("aria-pressed", lv ? "true" : "false");
+        btn.classList.toggle("now", playing && si === stepIdx);
+      });
+      const col = grid.querySelector(`.shiny-step[data-s="${stepIdx}"]`);
+      if (playing && col) {
+        const r = col.getBoundingClientRect();
+        const wrap = grid.parentElement.getBoundingClientRect();
+        playhead.hidden = false;
+        playhead.style.left = `${r.left - wrap.left + r.width / 2}px`;
+      } else {
+        playhead.hidden = true;
+      }
+    }
+
+    function applyEffectBus() {
+      if (!ctx || !master) return;
+      if (effectBus?.wet) {
+        try {
+          effectBus.wet.disconnect();
+        } catch {
+          /* noop */
+        }
+      }
+      effectBus = createEffectBus(ctx, master, state.effectIndex, state.effectMix);
+      conv = effectBus.conv;
+    }
+
+    function updateEffectMix() {
+      if (!effectBus?.wet) {
+        applyEffectBus();
+        return;
+      }
+      const fx = SHINY_EFFECTS[state.effectIndex] ?? SHINY_EFFECTS[0];
+      effectBus.wet.gain.value = state.effectMix * fx.wetMix;
+    }
+
+    function boot(c) {
+      ctx = c;
+      ({ master } = createMasterBus(c, 0.72));
+      applyEffectBus();
+      built = true;
+    }
+    registerAudioBoot(boot);
+
+    function playStepAt(si, when) {
+      for (let ri = 0; ri < SHINY_ROWS.length; ri++) {
+        const lv = state.pattern[ri][si];
+        playShinyDrum(ctx, master, conv, SHINY_ROWS[ri].id, {
+          level: lv,
+          pitch: state.pitches[SHINY_ROWS[ri].id],
+          kitIndex: state.kitIndex,
+          step: si,
+          dryMix: effectBus?.dryMix ?? 1,
+          when,
+        });
+      }
+    }
+
+    async function toggleStep(ri, si, preview) {
+      await startAudio(boot);
+      state.pattern[ri][si] = (state.pattern[ri][si] + 1) % 3;
+      redraw();
+      if (preview && state.pattern[ri][si]) {
+        playShinyDrum(ctx, master, conv, SHINY_ROWS[ri].id, {
+          level: state.pattern[ri][si],
+          pitch: state.pitches[SHINY_ROWS[ri].id],
+          kitIndex: state.kitIndex,
+          step: si,
+          dryMix: effectBus?.dryMix ?? 1,
+        });
+      }
+    }
+
+    function scheduler() {
+      if (!playing || !ctx) return;
+      const now = ctx.currentTime;
+      const secPerStep = 60 / state.tempo / 4;
+      while (nextTime <= now + 0.06) {
+        playStepAt(stepIdx, nextTime);
+        redraw();
+        const swingDir = stepIdx % 2 ? -1 : 1;
+        const swing = (state.swing / 100 / 3) * swingDir;
+        nextTime += (1 + swing) * secPerStep;
+        stepIdx = (stepIdx + 1) % STEPS;
+      }
+      schedId = requestAnimationFrame(scheduler);
+    }
+
+    async function togglePlay() {
+      await startAudio(boot);
+      playing = !playing;
+      const btn = document.getElementById("playBtn");
+      if (!playing) {
+        btn.textContent = "▶";
+        btn.classList.remove("active");
+        cancelAnimationFrame(schedId);
+        redraw();
+        return;
+      }
+      stepIdx = 0;
+      nextTime = ctx.currentTime + 0.05;
+      btn.textContent = "■";
+      btn.classList.add("active");
+      scheduler();
+    }
+
+    function loadDemo() {
+      const d = DEMO_PATTERN;
+      state.tempo = d.tempo;
+      state.swing = d.swing;
+      state.kitIndex = d.kitIndex;
+      state.effectIndex = d.effectIndex;
+      state.effectMix = d.effectMix;
+      state.pattern = d.grid.map((row) => [...row]);
+      state.pitches = { ...state.pitches, ...d.pitches };
+      syncControls();
+      redraw();
+    }
+
+    function resetPattern() {
+      state.pattern = SHINY_ROWS.map(() => Array(STEPS).fill(0));
+      redraw();
+    }
+
+    function syncControls() {
+      document.getElementById("bpm").value = String(state.tempo);
+      document.getElementById("bpmVal").textContent = String(state.tempo);
+      document.getElementById("swing").value = String(state.swing);
+      document.getElementById("fxLvl").value = String(Math.round(state.effectMix * 100));
+      document.getElementById("kitSel").value = String(state.kitIndex);
+      document.getElementById("fxSel").value = String(state.effectIndex);
+      SHINY_ROWS.forEach((row) => {
+        const el = document.getElementById(`pitch-${row.id}`);
+        if (el) el.value = String(Math.round(state.pitches[row.id] * 100));
+      });
+      applyEffectBus();
+    }
+
+    const kitSel = document.getElementById("kitSel");
+    SHINY_KITS.forEach((k, i) => {
+      const o = document.createElement("option");
+      o.value = String(i);
+      o.textContent = k.name;
+      kitSel.appendChild(o);
+    });
+    const fxSel = document.getElementById("fxSel");
+    SHINY_EFFECTS.forEach((fx, i) => {
+      const o = document.createElement("option");
+      o.value = String(i);
+      o.textContent = fx.name;
+      fxSel.appendChild(o);
+    });
+
+    const pitchesEl = document.getElementById("pitches");
+    SHINY_ROWS.forEach((row) => {
+      const lab = document.createElement("label");
+      lab.className = "shiny-field shiny-pitch";
+      lab.innerHTML = `${row.name} pitch <input type="range" id="pitch-${row.id}" min="0" max="100" value="50" />`;
+      pitchesEl.appendChild(lab);
+      lab.querySelector("input").addEventListener("input", (e) => {
+        state.pitches[row.id] = +e.target.value / 100;
+      });
+    });
+
+    document.getElementById("bpm").oninput = (e) => {
+      state.tempo = +e.target.value;
+      document.getElementById("bpmVal").textContent = e.target.value;
+    };
+    document.getElementById("swing").oninput = (e) => {
+      state.swing = +e.target.value;
+    };
+    document.getElementById("fxLvl").oninput = (e) => {
+      state.effectMix = +e.target.value / 100;
+      updateEffectMix();
+    };
+    kitSel.onchange = () => {
+      state.kitIndex = +kitSel.value;
+    };
+    fxSel.onchange = () => {
+      state.effectIndex = +fxSel.value;
+      applyEffectBus();
+    };
+
+    document.getElementById("playBtn").onclick = () => void togglePlay();
+    document.getElementById("demoBtn").onclick = async () => {
+      loadDemo();
+      if (!playing) await togglePlay();
+    };
+    document.getElementById("resetBtn").onclick = resetPattern;
+
+    window.addEventListener("keydown", (e) => {
+      if (e.code === "Space" && !e.target.closest("input, select")) {
+        e.preventDefault();
+        void togglePlay();
+      }
+    });
+
+    buildGrid();
+    syncControls();
+    redraw();
+  </script>
+</body>
+</html>

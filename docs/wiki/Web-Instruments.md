@@ -31,6 +31,7 @@ The `web/` folder is published automatically when `main` is pushed (GitHub Actio
 |-----|---------|------|
 | [Circular Groove](https://fourms.github.io/olo/apps/circular-groove/) | Keyboard · click | Euclidean rings + L-system evolution each bar |
 | [Beat Matrix](https://fourms.github.io/olo/apps/beat-matrix/) | Keyboard | 16×4 step grid |
+| [Shiny Machine](https://fourms.github.io/olo/apps/shiny-machine/) | Click · keyboard | 16×6 drum machine — kits, swing, FX |
 | [Filter Ladder](https://fourms.github.io/olo/apps/filter-ladder/) | Tilt · mouse | Ladder synth |
 | [Mic Theremin](https://fourms.github.io/olo/apps/mic-theremin/) | Mic · mouse | Pitch sine |
 | [Room Wash](https://fourms.github.io/olo/apps/room-wash/) | Mic · mouse | Reverb send |

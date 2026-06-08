@@ -10,6 +10,7 @@ Full-screen Web Audio instruments for **Oslo Laptop Orchestra** — inspired by 
 |-----|---------|-----------|
 | [Circular Groove](../web/apps/circular-groove/) | Keyboard · click | Euclidean rings + L-system bar evolution |
 | [Beat Matrix](../web/apps/beat-matrix/) | Keyboard · click | Drum step matrix |
+| [Shiny Machine](../web/apps/shiny-machine/) | Click · keyboard | Synthesized drum machine + convolution FX |
 | [CliX](../web/apps/clix/) | Keyboard · sync URL | Impulse + resonant filter |
 | [Crystalis](../web/apps/crystalis/) | Keyboard · pad | Bowed / plucked strings |
 | [Droner](../web/apps/droner/) | Mouse · keyboard | Additive corner drones |

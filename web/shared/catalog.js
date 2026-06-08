@@ -97,6 +97,13 @@ export const HUB_APPS = [
     origin: "Laptop step sequencer",
   },
   {
+    title: "Shiny Machine",
+    href: "apps/shiny-machine/",
+    tag: "Rhythm",
+    blurb: "16-step drum machine — kits, swing, convolution effects, tri-level velocity per step.",
+    origin: "Inspired by Chrome Labs WebAudio Drum Machine · synthesized",
+  },
+  {
     title: "Filter Ladder",
     href: "apps/filter-ladder/",
     tag: "Synthesis",
