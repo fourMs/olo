@@ -37,6 +37,7 @@ The `web/` folder is published automatically when `main` is pushed (GitHub Actio
 | [Room Wash](https://fourms.github.io/olo/apps/room-wash/) | Mic · mouse | Reverb send |
 | [Shadow Seq](https://fourms.github.io/olo/apps/shadow-seq/) | Camera | 8-zone mask |
 | [Wavetable Scan](https://fourms.github.io/olo/apps/wavetable-scan/) | Mouse | Wave morph |
+| [Autophagy](https://fourms.github.io/olo/apps/autophagy/) | Mouse · keyboard | Starvation & autophagy pathway sonification |
 
 More concepts and backlog: [`docs/LAPTOP-INSTRUMENTS.md`](https://github.com/fourMs/olo/blob/main/docs/LAPTOP-INSTRUMENTS.md).
 

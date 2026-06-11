@@ -27,6 +27,7 @@ Full-screen Web Audio instruments for **Oslo Laptop Orchestra** — inspired by 
 | [Vision Grain](../web/apps/vision-grain/) | Camera · keyboard | Granular |
 | [Shadow Seq](../web/apps/shadow-seq/) | Camera | 8-zone step mask |
 | [Tap Bloom](../web/apps/tap-bloom/) | Mouse | Generative pulses |
+| [Autophagy](../web/apps/autophagy/) | Mouse · keyboard | Nutrient stress & autophagy phase sonification |
 
 ## Circular Groove (flagship sequencer)
 

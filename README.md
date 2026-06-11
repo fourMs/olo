@@ -33,6 +33,7 @@ We follow the spirit of [PLOrk](https://plork.cs.princeton.edu/) (Princeton Lapt
 | [Room Wash](https://fourms.github.io/olo/apps/room-wash/) | Mic level → reverb wash |
 | [Shadow Seq](https://fourms.github.io/olo/apps/shadow-seq/) | Webcam shadows → 8-step rhythm |
 | [Wavetable Scan](https://fourms.github.io/olo/apps/wavetable-scan/) | Mouse morphs wavetables |
+| [Autophagy](https://fourms.github.io/olo/apps/autophagy/) | Starvation types & autophagy phases, sonified |
 
 Full sensor catalog: [docs/LAPTOP-INSTRUMENTS.md](docs/LAPTOP-INSTRUMENTS.md).
 

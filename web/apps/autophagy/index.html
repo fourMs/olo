@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#050608" />
+  <title>Autophagy — OLO</title>
+  <link rel="stylesheet" href="../../shared/ui.css" />
+</head>
+<body class="app-shell autophagy-app">
+  <header class="app-header">
+    <a class="back-link" href="../../">←</a>
+    <h1>Autophagy</h1>
+  </header>
+  <div class="learn-panel panel" id="learnPanel">
+    <h2>Cellular recycling, sonified</h2>
+    <p>Turn <strong>Audio on</strong>. <strong>Mouse Y</strong> = nutrient level (top fed, bottom starved). <strong>Mouse X</strong> = autophagy flux. <strong>Click</strong> engulfs cargo into a growing autophagosome.</p>
+    <p>Keys <strong>1–6</strong> switch starvation type (amino acid, glucose, complete, hypoxia, ER stress, oxidative). <strong>Space</strong> = refeeding — nutrients return, autophagy terminates.</p>
+    <p>Listen as the cell moves through phases: induction → nucleation → expansion → maturation → lysosomal degradation.</p>
+  </div>
+  <div class="autophagy-hud hud-bar" id="hud">Fed · amino acid starvation</div>
+  <div class="autophagy-toolbar">
+    <div class="autophagy-stress" id="stressPick" role="tablist" aria-label="Starvation type"></div>
+  </div>
+  <div class="stage-full stage-autophagy" id="stage">
+    <canvas id="cellCanvas" aria-label="Cell and autophagosome visualization"></canvas>
+  </div>
+  <script type="module">
+    import { bindLearn, registerAudioBoot, startAudio } from "../../shared/app.js";
+    import { createMasterBus } from "../../shared/audio.js";
+    import { pointerNorm } from "../../shared/laptop-sensors.js";
+    import {
+      PHASES,
+      STARVATION_TYPES,
+      createAutophagyEngine,
+    } from "../../shared/autophagy-engine.js";
+
+    bindLearn();
+
+    const stage = document.getElementById("stage");
+    const canvas = document.getElementById("cellCanvas");
+    const g = canvas.getContext("2d");
+    const hud = document.getElementById("hud");
+    const stressPick = document.getElementById("stressPick");
+
+    let ctx, master, engine, built = false;
+    let vesicles = [];
+    let lastRecycle = 0;
+    let anim = 0;
+
+    STARVATION_TYPES.forEach((s, i) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "autophagy-stress-btn" + (i === 0 ? " active" : "");
+      btn.textContent = s.name;
+      btn.title = s.hint;
+      btn.style.setProperty("--stress-color", s.color);
+      btn.onclick = () => selectStress(i);
+      stressPick.appendChild(btn);
+    });
+
+    function selectStress(i) {
+      if (engine) engine.setStarvation(i);
+      stressPick.querySelectorAll("button").forEach((b, j) => {
+        b.classList.toggle("active", j === i);
+      });
+    }
+
+    function boot(c) {
+      ctx = c;
+      ({ master } = createMasterBus(c, 0.58));
+      engine = createAutophagyEngine(c, master);
+      built = true;
+      resize();
+      loop();
+    }
+    registerAudioBoot(boot);
+
+    function resize() {
+      const box = stage.getBoundingClientRect();
+      const dpr = devicePixelRatio || 1;
+      canvas.width = Math.max(1, Math.floor(box.width * dpr));
+      canvas.height = Math.max(1, Math.floor(box.height * dpr));
+      g.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    window.addEventListener("resize", resize);
+
+    function spawnVesicle(x, y) {
+      vesicles.push({
+        x,
+        y,
+        r: 0.04 + Math.random() * 0.03,
+        grow: 0.35 + Math.random() * 0.25,
+        age: 0,
+      });
+    }
+
+    function drawCell(w, h, info) {
+      const cx = w * 0.5;
+      const cy = h * 0.52;
+      const cellR = Math.min(w, h) * 0.22;
+      const nutrient = engine.getNutrient();
+      const { phaseIdx, phaseT } = engine.phaseProgress();
+      const starve = STARVATION_TYPES[engine.getStarvation()];
+
+      g.fillStyle = "#080a0e";
+      g.fillRect(0, 0, w, h);
+
+      const ringR = cellR * 1.35;
+      g.strokeStyle = "#1e293b";
+      g.lineWidth = 10;
+      g.beginPath();
+      g.arc(cx, cy, ringR, 0, Math.PI * 2);
+      g.stroke();
+      const arcEnd = -Math.PI / 2 + Math.PI * 2 * nutrient;
+      g.strokeStyle = starve.color;
+      g.lineWidth = 10;
+      g.lineCap = "round";
+      g.beginPath();
+      g.arc(cx, cy, ringR, -Math.PI / 2, arcEnd);
+      g.stroke();
+
+      const grad = g.createRadialGradient(cx, cy, cellR * 0.1, cx, cy, cellR);
+      grad.addColorStop(0, `rgba(30, 58, 95, ${0.5 + nutrient * 0.35})`);
+      grad.addColorStop(1, `rgba(8, 10, 14, ${0.9 - nutrient * 0.2})`);
+      g.fillStyle = grad;
+      g.beginPath();
+      g.arc(cx, cy, cellR, 0, Math.PI * 2);
+      g.fill();
+      g.strokeStyle = starve.color + "88";
+      g.lineWidth = 2;
+      g.stroke();
+
+      vesicles = vesicles.filter((v) => v.age < 8);
+      vesicles.forEach((v) => {
+        v.age += 0.016;
+        const maxR = cellR * (0.15 + phaseIdx * 0.04);
+        v.r = Math.min(maxR, v.r + v.grow * 0.004 * (1.2 - nutrient));
+        const px = cx + (v.x - 0.5) * cellR * 1.6;
+        const py = cy + (v.y - 0.5) * cellR * 1.6;
+        g.fillStyle = phaseIdx >= 4 ? "#f97316aa" : "#38bdf888";
+        g.beginPath();
+        g.arc(px, py, v.r * cellR, 0, Math.PI * 2);
+        g.fill();
+        if (phaseIdx >= 4 && v.age > 2) {
+          g.strokeStyle = "#fbbf2488";
+          g.lineWidth = 1;
+          g.beginPath();
+          g.arc(px, py, v.r * cellR * 1.15, 0, Math.PI * 2);
+          g.stroke();
+        }
+      });
+
+      if (phaseIdx >= 3 && nutrient < 0.4) {
+        const ly = cy + cellR * 0.35;
+        const lx = cx + Math.sin(anim * 0.02) * cellR * 0.2;
+        g.fillStyle = "#ea580c99";
+        g.beginPath();
+        g.arc(lx, ly, cellR * 0.12 * (0.6 + phaseT), 0, Math.PI * 2);
+        g.fill();
+      }
+
+      if (phaseIdx >= 4) {
+        for (let i = 0; i < 12; i++) {
+          const a = anim * 0.03 + (i / 12) * Math.PI * 2;
+          const pr = cellR * (0.3 + (i % 3) * 0.08);
+          const px = cx + Math.cos(a) * pr;
+          const py = cy + Math.sin(a) * pr;
+          g.fillStyle = `rgba(251, 191, 36, ${0.15 + phaseT * 0.35})`;
+          g.fillRect(px - 2, py - 2, 4, 4);
+        }
+      }
+
+      g.fillStyle = "#94a3b8";
+      g.font = "11px system-ui, sans-serif";
+      g.textAlign = "center";
+      g.fillText(PHASES[phaseIdx].label, cx, cy - cellR - 28);
+      g.fillStyle = starve.color;
+      g.font = "600 13px system-ui, sans-serif";
+      g.fillText(PHASES[phaseIdx].name, cx, cy - cellR - 12);
+    }
+
+    function loop() {
+      if (!built || !engine) {
+        anim = requestAnimationFrame(loop);
+        return;
+      }
+      const now = ctx.currentTime;
+      const n = engine.getNutrient();
+      if (n < 0.78 && n > 0.02) engine.setNutrient(n - 0.00012);
+      const info = engine.update(now);
+      engine.decayFlux(0.016);
+
+      const w = canvas.width / (devicePixelRatio || 1);
+      const h = canvas.height / (devicePixelRatio || 1);
+      drawCell(w, h, info);
+
+      hud.textContent = `${PHASES[info.phaseIdx].name} · ${info.starve.name} · nutrients ${Math.round(engine.getNutrient() * 100)}%`;
+
+      if (info.phaseIdx >= 4 && now - lastRecycle > 1.8 - info.stress * 0.8) {
+        engine.recycleShimmer(now);
+        lastRecycle = now;
+      }
+
+      anim = requestAnimationFrame(loop);
+    }
+
+    stage.addEventListener("pointerdown", async (e) => {
+      await startAudio(boot);
+      const p = pointerNorm(stage, e);
+      engine.setNutrient(1 - p.ny);
+      engine.addFlux(p.nx * 0.08 + 0.04);
+      spawnVesicle(p.nx, p.ny);
+      if (built) engine.engulf();
+    });
+
+    stage.addEventListener("pointermove", async (e) => {
+      if (e.buttons === 0) return;
+      await startAudio(boot);
+      const p = pointerNorm(stage, e);
+      engine.setNutrient(1 - p.ny);
+      engine.addFlux(0.012);
+      if (Math.random() < 0.08) spawnVesicle(p.nx, p.ny);
+    });
+
+    stage.addEventListener("pointermove", (e) => {
+      if (!engine || e.buttons !== 0) return;
+      const p = pointerNorm(stage, e);
+      engine.setNutrient(1 - p.ny);
+    });
+
+    window.addEventListener("keydown", async (e) => {
+      if (e.code === "Space" && !e.target.closest("input, button, select")) {
+        e.preventDefault();
+        await startAudio(boot);
+        engine.refeed();
+        vesicles = [];
+        return;
+      }
+      const n = parseInt(e.key, 10);
+      if (n >= 1 && n <= 6) selectStress(n - 1);
+    });
+
+    resize();
+  </script>
+</body>
+</html>

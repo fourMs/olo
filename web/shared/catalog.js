@@ -138,4 +138,11 @@ export const HUB_APPS = [
     blurb: "Hold the pad; X morphs waveshapes, Y = pitch and level.",
     origin: "OMO Wavetable Scan · laptop",
   },
+  {
+    title: "Autophagy",
+    href: "apps/autophagy/",
+    tag: "Texture",
+    blurb: "Sonify cellular starvation and autophagy — nutrients, phases, lysosomal recycling.",
+    origin: "Biology × laptop performance · nutrient stress sonification",
+  },
 ];
